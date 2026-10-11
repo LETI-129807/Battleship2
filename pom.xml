@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -13,45 +14,45 @@
 	<url>https://github.com/britoeabreu/Battleship2.git</url>
 
 	<developers>
-	  <developer>
-		<id>mgoulao</id>
-		<name>Miguel Goulão</name>
-		<email>mgoul@fct.unl.pt</email>
-		<organization>FCT/UNL</organization>
-		<roles>
-		  <role>Product Owner</role>
-		</roles>
-	  </developer>
+		<developer>
+			<id>mgoulao</id>
+			<name>Miguel Goulão</name>
+			<email>mgoul@fct.unl.pt</email>
+			<organization>FCT/UNL</organization>
+			<roles>
+				<role>Product Owner</role>
+			</roles>
+		</developer>
 
-	  <developer>
-		<id>jose-vicente-reis</id>
-		<name>José Vicente Reis</name>
-		<email>Jose_Vicente_Reis@iscte-iul.pt</email>
-		<organization>Iscte-IUL</organization>
-		<roles>
-		  <role>Team Member</role>
-		</roles>
-	  </developer>
+		<developer>
+			<id>jose-vicente-reis</id>
+			<name>José Vicente Reis</name>
+			<email>Jose_Vicente_Reis@iscte-iul.pt</email>
+			<organization>Iscte-IUL</organization>
+			<roles>
+				<role>Team Member</role>
+			</roles>
+		</developer>
 
-	  <developer>
-		<id>adriano-lopes</id>
-		<name>Adriano Lopes</name>
-		<email>adriano.lopes@iscte-iul.pt</email>
-		<organization>Iscte-IUL</organization>
-		<roles>
-		  <role>Team Member</role>
-		</roles>
-	  </developer>
+		<developer>
+			<id>adriano-lopes</id>
+			<name>Adriano Lopes</name>
+			<email>adriano.lopes@iscte-iul.pt</email>
+			<organization>Iscte-IUL</organization>
+			<roles>
+				<role>Team Member</role>
+			</roles>
+		</developer>
 
-	  <developer>
-		<id>fernando-brito-abreu</id>
-		<name>Fernando Brito e Abreu</name>
-		<email>fba@iscte-iul.pt</email>
-		<organization>Iscte-IUL</organization>
-		<roles>
-		  <role>Scrum Master</role>
-		</roles>
-	  </developer>
+		<developer>
+			<id>fernando-brito-abreu</id>
+			<name>Fernando Brito e Abreu</name>
+			<email>fba@iscte-iul.pt</email>
+			<organization>Iscte-IUL</organization>
+			<roles>
+				<role>Scrum Master</role>
+			</roles>
+		</developer>
 	</developers>
 
 	<properties>
@@ -74,9 +75,13 @@
 		<allure.version>2.31.0</allure.version>
 
 		<jetbrains.annotations.version>26.1.0</jetbrains.annotations.version>
+
+		<!-- Versao da biblioteca Apache PDFBox -->
+		<pdfbox.version>3.0.5</pdfbox.version>
 	</properties>
 
 	<dependencies>
+
 		<!-- Spring Boot REST server (includes Jackson, embedded Tomcat) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -133,6 +138,14 @@
 			<version>${jetbrains.annotations.version}</version>
 			<scope>compile</scope>
 		</dependency>
+
+		<!-- Apache PDFBox: exportacao do historico de jogadas para PDF -->
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>${pdfbox.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -168,6 +181,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -178,6 +192,7 @@
 					</includes>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
