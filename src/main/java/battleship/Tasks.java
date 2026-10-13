@@ -5,6 +5,8 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.apache.commons.lang3.time.StopWatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The type Tasks.
@@ -40,6 +42,7 @@ public class Tasks {
 
 		IFleet myFleet = null;
 		IGame game = null;
+		StopWatch turnWatch = new StopWatch();
 		menuHelp();
 
 		System.out.print("> ");
@@ -52,11 +55,19 @@ public class Tasks {
 					myFleet = Fleet.createRandom();
 					game = new Game(myFleet);
 					game.printMyBoard(false, true);
+
+					turnWatch.reset();
+					turnWatch.start();
+
 					break;
 				case LEFROTA:
 					myFleet = buildFleet(in);
 					game = new Game(myFleet);
 					game.printMyBoard(false, true);
+
+					turnWatch.reset();
+					turnWatch.start();
+
 					break;
 				case STATUS:
 					if (myFleet != null)
@@ -72,6 +83,15 @@ public class Tasks {
 						myFleet.printStatus();
 						game.printMyBoard(true, false);
 
+						if (turnWatch.isStarted()){
+							turnWatch.stop();
+							long segundos = turnWatch.getTime(TimeUnit.SECONDS);
+
+							System.out.println("⏱️ Tempo gasto nesta jogada: " + segundos + " segundos");
+						}
+						turnWatch.reset();
+						turnWatch.start();
+
 						if (game.getRemainingShips() == 0) {
 							game.over();
 							System.exit(0);
@@ -81,9 +101,15 @@ public class Tasks {
 				case SIMULA:
 					if (game != null) {
 						while (game.getRemainingShips() > 0){
+							StopWatch watch = StopWatch.createStarted();
+
 							game.randomEnemyFire();
 							myFleet.printStatus();
 							game.printMyBoard(true, false);
+
+							watch.stop();
+							System.out.println("⏱️ Tempo de processamento da jogada: " + watch.getTime() + " ms");
+
 							try {
 								Thread.sleep(3000);
 							} catch (InterruptedException e) {
