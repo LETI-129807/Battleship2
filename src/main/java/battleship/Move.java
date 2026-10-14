@@ -1,6 +1,7 @@
 package battleship;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -25,6 +26,40 @@ public class Move implements IMove {
 		this.number = moveNumber;
 		this.shots = moveShots;
 		this.shotResults = moveResults;
+	}
+
+	public static class ShotInputDTO{
+		private String row;
+		private int column;
+
+		public String getRow(){
+			return row;
+		}
+		public void setRow(){
+			this.row = row;
+		}
+		public int getColumn(){return column;}
+		public void setColumn(int column){this.column = column;}
+
+	}
+
+	public static List<IPosition> parseShotsFromJson(String jsonInput){
+		ObjectMapper objectMapper = new ObjectMapper();
+		List<IPosition> positions = new ArrayList<>();
+		try {
+			List<ShotInputDTO> dtoList = objectMapper.readValue(
+					jsonInput,
+					new TypeReference<List<ShotInputDTO>>() {}
+			);
+
+			for (ShotInputDTO dto : dtoList) {
+				IPosition pos = new Position(dto.getRow().charAt(0), dto.getColumn());
+				positions.add(pos);
+			}
+		} catch (Exception e) {
+			System.err.println("Erro ao converter JSON de entrada para IPosition: " + e.getMessage());
+		}
+		return positions;
 	}
 
 	@Override
@@ -69,8 +104,8 @@ public class Move implements IMove {
 		int repeatedShots = 0;
 		int missedShots = 0;
 
-		Map<String, Integer> sunkBoatsCount = new HashMap<>(); // Rastrear quantos navios de cada tipo afundaram
-		Map<String, Integer> hitsPerBoat = new HashMap<>();
+		Map<String, Integer> sunkBoatsCount = new LinkedHashMap<>(); // Rastrear quantos navios de cada tipo afundaram
+		Map<String, Integer> hitsPerBoat = new LinkedHashMap<>();
 
 		// Processar cada resultado de tiro
 		for (IGame.ShotResult result : this.shotResults) {
@@ -88,9 +123,12 @@ public class Move implements IMove {
 					missedShots++; // Tiro na água
 				else{
 					String boatName = result.ship().getCategory();
-					hitsPerBoat.put(boatName, hitsPerBoat.getOrDefault(boatName, 0) + 1);
-					if (result.sunk())
+					if (result.sunk()) {
 						sunkBoatsCount.put(boatName, sunkBoatsCount.getOrDefault(boatName, 0) + 1); // Contar barcos do mesmo tipo afundados
+					}else{
+						hitsPerBoat.put(boatName, hitsPerBoat.getOrDefault(boatName, 0) + 1);
+					}
+
 				}
 			}
 		}
@@ -155,7 +193,7 @@ public class Move implements IMove {
 		}
 
 		// Criar o mapa para o JSON
-		Map<String, Object> response = new HashMap<>();
+		Map<String, Object> response = new LinkedHashMap<>();
 		response.put("validShots", validShots);
 		response.put("outsideShots", outsideShots);
 		response.put("repeatedShots", repeatedShots);
