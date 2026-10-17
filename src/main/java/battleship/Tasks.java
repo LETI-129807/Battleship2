@@ -76,6 +76,8 @@ public class Tasks {
 
 						if (game.getRemainingShips() == 0) {
 							game.over();
+							scoreboardManager.addScore("Jogador", game.getMyMoves().size());
+							scoreboardManager.displayScoreboard();
 							System.exit(0);
 						}
 					}
@@ -95,6 +97,10 @@ public class Tasks {
 
 						if (game.getRemainingShips() == 0) {
 							game.over();
+
+							scoreboardManager.addScore("Simulação", game.getAlienMoves().size());
+							scoreboardManager.displayScoreboard();
+
 							System.exit(0);
 						}
 					}
