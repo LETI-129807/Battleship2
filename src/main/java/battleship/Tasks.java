@@ -15,19 +15,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Tasks {
 
-    /**
-     * The constant LOGGER.
-     */
     private static final Logger LOGGER = LogManager.getLogger();
 
-    /**
-     * The constant GOODBYE_MESSAGE.
-     */
     private static final String GOODBYE_MESSAGE = "Bons ventos!";
 
-    /**
-     * Strings to be used by the user.
-     */
+    // Comandos do jogo
     private static final String AJUDA = "ajuda";
     private static final String GERAFROTA = "gerafrota";
     private static final String LEFROTA = "lefrota";
@@ -37,9 +29,10 @@ public class Tasks {
     private static final String MAPA = "mapa";
     private static final String STATUS = "estado";
     private static final String SIMULA = "simula";
-    private static final String SCOREBOARD = "scoreboard";
 
-    // User Story: exportar historico de jogadas para PDF
+    // Funcionalidades dos membros do grupo
+    private static final String SCOREBOARD = "scoreboard";
+    private static final String JANELA = "janela";
     private static final String EXPORTPDF = "exportpdf";
 
     private static final DateTimeFormatter PDF_DATE_FORMAT =
@@ -48,7 +41,7 @@ public class Tasks {
     private static final Scoreboard scoreboardManager = new Scoreboard();
 
     /**
-     * This task also tests the fighting element of a round of three shots.
+     * Menu principal do jogo.
      */
     public static void menu() {
 
@@ -99,6 +92,7 @@ public class Tasks {
                             game.printMyBoard(true, false);
 
                             if (game.getRemainingShips() == 0) {
+
                                 game.over();
 
                                 scoreboardManager.addScore(
@@ -118,6 +112,7 @@ public class Tasks {
                                     "Erro: " + e.getMessage()
                             );
                         }
+
                     } else {
                         System.out.println(
                                 "Primeiro tem de criar uma frota."
@@ -143,6 +138,7 @@ public class Tasks {
                         }
 
                         if (game.getRemainingShips() == 0) {
+
                             game.over();
 
                             scoreboardManager.addScore(
@@ -170,10 +166,23 @@ public class Tasks {
                     }
                     break;
 
+                // Funcionalidade Scoreboard
                 case SCOREBOARD:
                     scoreboardManager.displayScoreboard();
                     break;
 
+                // Funcionalidade Janela Grafica
+                case JANELA:
+                    if (game != null) {
+                        battleship.gui.BattleshipGUI.show(game);
+                    } else {
+                        System.out.println(
+                                "Gera ou carrega uma frota primeiro (usa 'gerafrota' ou 'lefrota')."
+                        );
+                    }
+                    break;
+
+                // Funcionalidade Exportar PDF
                 case EXPORTPDF:
                     if (game != null) {
 
@@ -182,6 +191,7 @@ public class Tasks {
                                 + ".pdf";
 
                         try {
+
                             PdfExporter.export(game, fileName);
 
                             System.out.println(
@@ -190,6 +200,7 @@ public class Tasks {
                             );
 
                         } catch (IOException e) {
+
                             System.out.println(
                                     "Erro ao exportar PDF: "
                                             + e.getMessage()
@@ -211,6 +222,7 @@ public class Tasks {
                     System.out.println(
                             "Que comando é esse??? Repete ..."
                     );
+                    break;
             }
 
             System.out.print("> ");
@@ -221,7 +233,7 @@ public class Tasks {
     }
 
     /**
-     * This function provides help information about the menu commands.
+     * Apresenta os comandos disponiveis.
      */
     public static void menuHelp() {
 
@@ -236,6 +248,7 @@ public class Tasks {
         System.out.println("- " + SIMULA + ": Simula um jogo completo.");
         System.out.println("- " + TIROS + ": Lista os tiros válidos realizados (* = tiro em navio, o = tiro na água)");
         System.out.println("- " + SCOREBOARD + ": Exibe a tabela de pontuações dos jogos passados.");
+        System.out.println("- " + JANELA + ": Abre a visualização gráfica dos tabuleiros.");
         System.out.println("- " + EXPORTPDF + ": Exporta o historico de jogadas para PDF.");
         System.out.println("- " + DESISTIR + ": Encerra o jogo.");
 
@@ -243,10 +256,10 @@ public class Tasks {
     }
 
     /**
-     * This operation allows the build up of a fleet, given user data.
+     * Constroi uma frota a partir dos dados introduzidos.
      *
-     * @param in The scanner to read from
-     * @return The fleet that has been built
+     * @param in Scanner de entrada
+     * @return Frota construida
      */
     public static Fleet buildFleet(Scanner in) {
 
@@ -285,10 +298,10 @@ public class Tasks {
     }
 
     /**
-     * This operation reads data about a ship, builds it and returns it.
+     * Le os dados de um navio.
      *
-     * @param in The scanner to read from
-     * @return The created ship based on the data that has been read
+     * @param in Scanner de entrada
+     * @return Navio construido
      */
     public static Ship readShip(Scanner in) {
 
@@ -306,10 +319,10 @@ public class Tasks {
     }
 
     /**
-     * This operation allows reading a position in the map.
+     * Le uma posicao numerica.
      *
-     * @param in The scanner to read from
-     * @return The position that has been read
+     * @param in Scanner de entrada
+     * @return Posicao lida
      */
     public static Position readPosition(Scanner in) {
 
@@ -322,10 +335,10 @@ public class Tasks {
     }
 
     /**
-     * This operation allows reading a classic position in the map.
+     * Le uma posicao no formato A3 ou A 3.
      *
-     * @param in The scanner to read from
-     * @return The classic position that has been read
+     * @param in Scanner de entrada
+     * @return Posicao lida
      */
     public static IPosition readClassicPosition(@NotNull Scanner in) {
 

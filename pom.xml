@@ -1,8 +1,8 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pt.iscte-iul.istar</groupId>
@@ -69,27 +69,24 @@
         <maven.shade.version>3.5.0</maven.shade.version>
 
         <apache.log4j.version>2.25.4</apache.log4j.version>
-
         <jackson.version>2.18.11</jackson.version>
-
         <allure.version>2.31.0</allure.version>
-
         <jetbrains.annotations.version>26.1.0</jetbrains.annotations.version>
 
-        <!-- Versao da biblioteca Apache PDFBox -->
+        <!-- Biblioteca para exportar PDF -->
         <pdfbox.version>3.0.5</pdfbox.version>
     </properties>
 
     <dependencies>
 
-        <!-- Spring Boot REST server (includes Jackson, embedded Tomcat) -->
+        <!-- Spring Boot REST server -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>3.2.4</version>
         </dependency>
 
-        <!-- Gson (Google JSON) -->
+        <!-- Gson: manter apenas uma vez -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -113,6 +110,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- JUnit Platform Launcher -->
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
@@ -120,6 +118,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Log4j -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -127,19 +126,21 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- Jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
 
+        <!-- Allure -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-java-commons-test</artifactId>
             <version>${allure.version}</version>
         </dependency>
 
-        <!-- Source: https://mvnrepository.com/artifact/org.jetbrains/annotations -->
+        <!-- JetBrains Annotations -->
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
@@ -147,17 +148,31 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- Apache PDFBox: exportacao do historico de jogadas para PDF -->
+        <!-- A tua funcionalidade: Exportar PDF -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
             <version>${pdfbox.version}</version>
         </dependency>
 
+        <!-- Funcionalidade do colega: Janela gráfica -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>21.0.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>21.0.12</version>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -209,6 +224,15 @@
                     <outputDirectory>${project.basedir}/docs</outputDirectory>
                 </configuration>
             </plugin>
+
+            <!-- Plugin de execução JavaFX -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+            </plugin>
+
         </plugins>
     </build>
+
 </project>
