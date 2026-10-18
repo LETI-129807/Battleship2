@@ -1,23 +1,33 @@
 
 package battleship;
 
-import java.io.IOException;
-import java.nio.file.Path;
+import java.util.Scanner;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Scanner;
+import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * The type Tasks.
+ */
 public class Tasks {
 
+    /**
+     * The constant LOGGER.
+     */
     private static final Logger LOGGER = LogManager.getLogger();
 
+    /**
+     * The constant GOODBYE_MESSAGE.
+     */
     private static final String GOODBYE_MESSAGE = "Bons ventos!";
 
-    // Comandos do jogo
+    /**
+     * Strings to be used by the user.
+     */
     private static final String AJUDA = "ajuda";
     private static final String GERAFROTA = "gerafrota";
     private static final String LEFROTA = "lefrota";
@@ -29,7 +39,7 @@ public class Tasks {
     private static final String SIMULA = "simula";
     private static final String SCOREBOARD = "scoreboard";
 
-    // Comando de exportacao para PDF
+    // User Story: exportar historico de jogadas para PDF
     private static final String EXPORTPDF = "exportpdf";
 
     private static final DateTimeFormatter PDF_DATE_FORMAT =
@@ -38,155 +48,205 @@ public class Tasks {
     private static final Scoreboard scoreboardManager = new Scoreboard();
 
     /**
-     * Executa os comandos introduzidos pelo jogador.
+     * This task also tests the fighting element of a round of three shots.
      */
-    public static void main(String[] args) {
+    public static void menu() {
 
-        Scanner in = new Scanner(System.in);
-        Game game = new Game();
+        IFleet myFleet = null;
+        IGame game = null;
 
-        System.out.println("Bem-vindo ao Batalha Naval!");
         menuHelp();
 
-        boolean running = true;
+        System.out.print("> ");
 
-        while (running && in.hasNextLine()) {
+        Scanner in = new Scanner(System.in);
+        String command = in.next();
 
-            String line = in.nextLine().trim();
+        while (!command.equals(DESISTIR)) {
 
-            if (line.isEmpty()) {
-                continue;
-            }
+            switch (command) {
 
-            Scanner commandScanner = new Scanner(line);
+                case GERAFROTA:
+                    myFleet = Fleet.createRandom();
+                    game = new Game(myFleet);
+                    game.printMyBoard(false, true);
+                    break;
 
-            String command = commandScanner.next().toLowerCase();
+                case LEFROTA:
+                    myFleet = buildFleet(in);
+                    game = new Game(myFleet);
+                    game.printMyBoard(false, true);
+                    break;
 
-            try {
+                case STATUS:
+                    if (myFleet != null) {
+                        myFleet.printStatus();
+                    }
+                    break;
 
-                switch (command) {
+                case MAPA:
+                    if (game != null) {
+                        game.printMyBoard(false, true);
+                    }
+                    break;
 
-                    case AJUDA:
-                        menuHelp();
-                        break;
+                case RAJADA:
+                    if (game != null) {
 
-                    case GERAFROTA:
-                        Fleet fleet = buildFleet(commandScanner);
-                        game.setMyFleet(fleet);
-                        break;
+                        try {
+                            game.readEnemyFire(in);
+                            myFleet.printStatus();
+                            game.printMyBoard(true, false);
 
-                    case LEFROTA:
-                        game.readMyFleet(commandScanner);
-                        break;
+                            if (game.getRemainingShips() == 0) {
+                                game.over();
 
-                    case MAPA:
-                        game.printMyBoard(true, false);
-                        break;
+                                scoreboardManager.addScore(
+                                        "Jogador",
+                                        game.getMyMoves().size()
+                                );
 
-                    case STATUS:
-                        game.getMyFleet().printStatus();
-                        break;
+                                scoreboardManager.displayScoreboard();
 
-                    case TIROS:
-                        game.printEnemyBoard();
-                        break;
+                                System.out.println(
+                                        "Jogo terminado. Pode escrever exportpdf para guardar o historico."
+                                );
+                            }
 
-                    case RAJADA:
-                        game.readEnemyFire(commandScanner);
-                        game.getMyFleet().printStatus();
-                        game.printMyBoard(true, false);
-
-                        if (game.getMyFleet().getRemainingShips() == 0) {
-                            game.over();
+                        } catch (IllegalArgumentException e) {
                             System.out.println(
-                                    "Pode exportar o historico com o comando exportpdf."
+                                    "Erro: " + e.getMessage()
                             );
                         }
-                        break;
+                    } else {
+                        System.out.println(
+                                "Primeiro tem de criar uma frota."
+                        );
+                    }
+                    break;
 
-                    case SIMULA:
-                        game.simulate();
+                case SIMULA:
+                    if (game != null) {
 
-                        if (game.getMyFleet().getRemainingShips() == 0) {
+                        while (game.getRemainingShips() > 0) {
+
+                            game.randomEnemyFire();
+                            myFleet.printStatus();
+                            game.printMyBoard(true, false);
+
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                                break;
+                            }
+                        }
+
+                        if (game.getRemainingShips() == 0) {
                             game.over();
+
+                            scoreboardManager.addScore(
+                                    "Simulação",
+                                    game.getAlienMoves().size()
+                            );
+
+                            scoreboardManager.displayScoreboard();
+
                             System.out.println(
-                                    "Pode exportar o historico com o comando exportpdf."
+                                    "Simulacao terminada. Pode escrever exportpdf para guardar o historico."
                             );
                         }
-                        break;
 
-                    case SCOREBOARD:
-                        scoreboardManager.displayScores();
-                        break;
+                    } else {
+                        System.out.println(
+                                "Primeiro tem de criar uma frota."
+                        );
+                    }
+                    break;
 
-                    case EXPORTPDF:
+                case TIROS:
+                    if (game != null) {
+                        game.printMyBoard(true, true);
+                    }
+                    break;
+
+                case SCOREBOARD:
+                    scoreboardManager.displayScoreboard();
+                    break;
+
+                case EXPORTPDF:
+                    if (game != null) {
+
                         String fileName = "historico_"
                                 + LocalDateTime.now().format(PDF_DATE_FORMAT)
                                 + ".pdf";
 
-                        Path outputPath = Path.of(fileName);
+                        try {
+                            PdfExporter.export(game, fileName);
 
-                        PdfExporter.export(game, outputPath);
+                            System.out.println(
+                                    "Historico exportado para PDF: "
+                                            + fileName
+                            );
 
+                        } catch (IOException e) {
+                            System.out.println(
+                                    "Erro ao exportar PDF: "
+                                            + e.getMessage()
+                            );
+                        }
+
+                    } else {
                         System.out.println(
-                                "Historico exportado para: "
-                                        + outputPath.toAbsolutePath()
+                                "Nao existe nenhum jogo para exportar."
                         );
-                        break;
+                    }
+                    break;
 
-                    case DESISTIR:
-                        System.out.println(GOODBYE_MESSAGE);
-                        running = false;
-                        break;
+                case AJUDA:
+                    menuHelp();
+                    break;
 
-                    default:
-                        System.out.println(
-                                "Comando desconhecido. Escreva ajuda."
-                        );
-                        break;
-                }
-
-            } catch (IllegalArgumentException e) {
-
-                System.out.println("Erro: " + e.getMessage());
-
-            } catch (IOException e) {
-
-                System.out.println(
-                        "Erro ao exportar PDF: " + e.getMessage()
-                );
+                default:
+                    System.out.println(
+                            "Que comando é esse??? Repete ..."
+                    );
             }
 
-            commandScanner.close();
+            System.out.print("> ");
+            command = in.next();
         }
 
-        in.close();
+        System.out.println(GOODBYE_MESSAGE);
     }
 
     /**
-     * Mostra os comandos disponiveis.
+     * This function provides help information about the menu commands.
      */
     public static void menuHelp() {
 
-        System.out.println("===============================================================");
-        System.out.println("COMANDOS DISPONIVEIS");
-        System.out.println("===============================================================");
-        System.out.println("- " + AJUDA + ": Mostra esta ajuda.");
-        System.out.println("- " + GERAFROTA + ": Gera uma frota.");
-        System.out.println("- " + LEFROTA + ": Le uma frota.");
-        System.out.println("- " + MAPA + ": Mostra o mapa.");
-        System.out.println("- " + STATUS + ": Mostra o estado da frota.");
-        System.out.println("- " + RAJADA + ": Realiza uma rajada de 3 tiros (ex.: rajada A1 B3 C5).");
+        System.out.println("======================= AJUDA DO MENU =========================");
+        System.out.println("Digite um dos comandos abaixo para interagir com o jogo:");
+
+        System.out.println("- " + GERAFROTA + ": Gera uma frota aleatória de navios.");
+        System.out.println("- " + LEFROTA + ": Permite criar e carregar uma frota personalizada.");
+        System.out.println("- " + STATUS + ": Mostra o status atual da frota.");
+        System.out.println("- " + MAPA + ": Exibe o mapa da frota.");
+        System.out.println("- " + RAJADA + ": Realiza uma rajada de disparos.");
         System.out.println("- " + SIMULA + ": Simula um jogo completo.");
-        System.out.println("- " + TIROS + ": Mostra os tiros realizados no tabuleiro.");
-        System.out.println("- " + SCOREBOARD + ": Exibe a tabela de pontuacoes dos jogos passados.");
+        System.out.println("- " + TIROS + ": Lista os tiros válidos realizados (* = tiro em navio, o = tiro na água)");
+        System.out.println("- " + SCOREBOARD + ": Exibe a tabela de pontuações dos jogos passados.");
         System.out.println("- " + EXPORTPDF + ": Exporta o historico de jogadas para PDF.");
         System.out.println("- " + DESISTIR + ": Encerra o jogo.");
+
         System.out.println("===============================================================");
     }
 
     /**
-     * Constroi uma frota a partir dos dados introduzidos.
+     * This operation allows the build up of a fleet, given user data.
+     *
+     * @param in The scanner to read from
+     * @return The fleet that has been built
      */
     public static Fleet buildFleet(Scanner in) {
 
@@ -225,7 +285,10 @@ public class Tasks {
     }
 
     /**
-     * Le os dados de um navio.
+     * This operation reads data about a ship, builds it and returns it.
+     *
+     * @param in The scanner to read from
+     * @return The created ship based on the data that has been read
      */
     public static Ship readShip(Scanner in) {
 
@@ -243,7 +306,10 @@ public class Tasks {
     }
 
     /**
-     * Le uma posicao com coordenadas numericas.
+     * This operation allows reading a position in the map.
+     *
+     * @param in The scanner to read from
+     * @return The position that has been read
      */
     public static Position readPosition(Scanner in) {
 
@@ -256,13 +322,16 @@ public class Tasks {
     }
 
     /**
-     * Le uma posicao no formato A3 ou A 3.
+     * This operation allows reading a classic position in the map.
+     *
+     * @param in The scanner to read from
+     * @return The classic position that has been read
      */
     public static IPosition readClassicPosition(@NotNull Scanner in) {
 
         if (!in.hasNext()) {
             throw new IllegalArgumentException(
-                    "Nenhuma posicao valida encontrada!"
+                    "Nenhuma posição válida encontrada!"
             );
         }
 
@@ -300,7 +369,7 @@ public class Tasks {
         } else {
 
             throw new IllegalArgumentException(
-                    "Formato invalido. Use 'A3', 'A 3' ou similar."
+                    "Formato inválido. Use 'A3', 'A 3' ou similar."
             );
         }
     }
