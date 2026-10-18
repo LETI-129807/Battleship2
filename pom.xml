@@ -23,7 +23,6 @@
                 <role>Product Owner</role>
             </roles>
         </developer>
-
         <developer>
             <id>jose-vicente-reis</id>
             <name>José Vicente Reis</name>
@@ -33,7 +32,6 @@
                 <role>Team Member</role>
             </roles>
         </developer>
-
         <developer>
             <id>adriano-lopes</id>
             <name>Adriano Lopes</name>
@@ -43,7 +41,6 @@
                 <role>Team Member</role>
             </roles>
         </developer>
-
         <developer>
             <id>fernando-brito-abreu</id>
             <name>Fernando Brito e Abreu</name>
@@ -73,20 +70,19 @@
         <allure.version>2.31.0</allure.version>
         <jetbrains.annotations.version>26.1.0</jetbrains.annotations.version>
 
-        <!-- Biblioteca para exportar PDF -->
         <pdfbox.version>3.0.5</pdfbox.version>
     </properties>
 
     <dependencies>
 
-        <!-- Spring Boot REST server -->
+        <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>3.2.4</version>
         </dependency>
 
-        <!-- Gson: manter apenas uma vez -->
+        <!-- Gson: apenas uma dependencia -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -94,7 +90,7 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- JUnit Jupiter API -->
+        <!-- JUnit -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -102,7 +98,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JUnit Jupiter Engine -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -110,7 +105,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JUnit Platform Launcher -->
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
@@ -140,6 +134,14 @@
             <version>${allure.version}</version>
         </dependency>
 
+        <!-- Apache Commons Lang3: cronometro do colega -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.20.0</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- JetBrains Annotations -->
         <dependency>
             <groupId>org.jetbrains</groupId>
@@ -148,14 +150,14 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- A tua funcionalidade: Exportar PDF -->
+        <!-- Exportacao PDF -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
             <version>${pdfbox.version}</version>
         </dependency>
 
-        <!-- Funcionalidade do colega: Janela gráfica -->
+        <!-- Janela grafica JavaFX -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -225,7 +227,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Plugin de execução JavaFX -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>

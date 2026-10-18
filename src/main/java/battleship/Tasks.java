@@ -1,11 +1,12 @@
-
 package battleship;
 
 import java.util.Scanner;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -47,6 +48,7 @@ public class Tasks {
 
         IFleet myFleet = null;
         IGame game = null;
+        StopWatch turnWatch = new StopWatch();
 
         menuHelp();
 
@@ -63,12 +65,18 @@ public class Tasks {
                     myFleet = Fleet.createRandom();
                     game = new Game(myFleet);
                     game.printMyBoard(false, true);
+
+                    turnWatch.reset();
+                    turnWatch.start();
                     break;
 
                 case LEFROTA:
                     myFleet = buildFleet(in);
                     game = new Game(myFleet);
                     game.printMyBoard(false, true);
+
+                    turnWatch.reset();
+                    turnWatch.start();
                     break;
 
                 case STATUS:
@@ -90,6 +98,23 @@ public class Tasks {
                             game.readEnemyFire(in);
                             myFleet.printStatus();
                             game.printMyBoard(true, false);
+
+                            // Cronometro da jogada
+                            if (turnWatch.isStarted()) {
+                                turnWatch.stop();
+
+                                System.out.println(
+                                        "Tempo gasto nesta jogada: "
+                                        + turnWatch.getTime(TimeUnit.SECONDS)
+                                        + " segundos"
+                                );
+                            }
+
+                            turnWatch.reset();
+
+                            if (game.getRemainingShips() > 0) {
+                                turnWatch.start();
+                            }
 
                             if (game.getRemainingShips() == 0) {
 
@@ -125,9 +150,20 @@ public class Tasks {
 
                         while (game.getRemainingShips() > 0) {
 
+                            // Cronometro de cada jogada simulada
+                            StopWatch watch = StopWatch.createStarted();
+
                             game.randomEnemyFire();
                             myFleet.printStatus();
                             game.printMyBoard(true, false);
+
+                            watch.stop();
+
+                            System.out.println(
+                                    "Tempo de processamento da jogada: "
+                                    + watch.getTime()
+                                    + " ms"
+                            );
 
                             try {
                                 Thread.sleep(3000);
@@ -196,14 +232,14 @@ public class Tasks {
 
                             System.out.println(
                                     "Historico exportado para PDF: "
-                                            + fileName
+                                    + fileName
                             );
 
                         } catch (IOException e) {
 
                             System.out.println(
                                     "Erro ao exportar PDF: "
-                                            + e.getMessage()
+                                    + e.getMessage()
                             );
                         }
 
