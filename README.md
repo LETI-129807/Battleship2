@@ -231,7 +231,8 @@ Feature branches must include the student's identification number.
 
 ## 🎥 Demonstration Video
 
-[video](https://youtu.be/_ATpNrVDUMQ?si=DKjEVv5iCcnSjwPZ)
+[video demo](https://youtu.be/_ATpNrVDUMQ?si=DKjEVv5iCcnSjwPZ)
+[video treino LLM](https://youtu.be/7bVtuG4Yo2s)
 
 ---
 
