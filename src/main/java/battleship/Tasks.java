@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-/**
+/*
  * The type Tasks.
  */
 public class Tasks {
@@ -32,7 +32,8 @@ public class Tasks {
 	private static final String MAPA = "mapa";
 	private static final String STATUS = "estado";
 	private static final String SIMULA = "simula";
-	private static final String SCOREBOARD = "scoreboard";
+private static final String JANELA = "janela";
+private static final String SCOREBOARD = "scoreboard";
 
 	private static final Scoreboard scoreboardManager = new Scoreboard();
 	/**
@@ -115,6 +116,13 @@ public class Tasks {
                 case AJUDA:
                     menuHelp();
                     break;
+				case JANELA:
+					if (game != null) {
+						battleship.gui.BattleshipGUI.show(game);
+					} else {
+						System.out.println("Gera ou carrega uma frota primeiro (usa 'gerafrota' ou 'lefrota').");
+					}
+					break;
 				default:
 					System.out.println("Que comando é esse??? Repete ...");
 			}
@@ -132,13 +140,14 @@ public class Tasks {
 		System.out.println("Digite um dos comandos abaixo para interagir com o jogo:");
 		System.out.println("- " + GERAFROTA + ": Gera uma frota aleatória de navios.");
 		System.out.println("- " + LEFROTA + ": Permite criar e carregar uma frota personalizada.");
-		System.out.println("- " + STATUS + ": Mostra o status atual da frota.)");
+		System.out.println("- " + STATUS + ": Mostra o status atual da frota.");
 		System.out.println("- " + MAPA + ": Exibe o mapa da frota.");
 		System.out.println("- " + RAJADA + ": Realiza uma rajada de disparos.");
 		System.out.println("- " + SIMULA + ": Simula um jogo completo.");
 		System.out.println("- " + TIROS + ": Lista os tiros válidos realizados (* = tiro em navio, o = tiro na água)");
 		System.out.println("- " + SCOREBOARD + ": Exibe a tabela de pontuações dos jogos passados.");
 		System.out.println("- " + DESISTIR + ": Encerra o jogo.");
+		System.out.println("- " + JANELA + ": Abre a visualização gráfica dos tabuleiros.");
 		System.out.println("===============================================================");
 	}
 	/**
