@@ -231,9 +231,7 @@ Feature branches must include the student's identification number.
 
 ## 🎥 Demonstration Video
 
-The group demonstration video will be added here after the integration of all features.
-
-The video will be published on YouTube and will have a maximum duration of five minutes.
+[video](https://youtu.be/_ATpNrVDUMQ?si=DKjEVv5iCcnSjwPZ)
 
 ---
 
