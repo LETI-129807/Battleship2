@@ -5,7 +5,6 @@ linter: jetbrains/qodana-jvm-community:2026.2
 projectJDK: "21"
 
 profile:
-  name: custom
   path: qodana/profiles/profile-129807.yaml
 
 failureConditions:
