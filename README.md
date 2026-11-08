@@ -1,151 +1,242 @@
 # ⚓ Battleship 2.0
 
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
-![Java Version](https://img.shields.io/badge/Java-17%2B-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+![Java](https://img.shields.io/badge/Java-21-blue)
+![Maven](https://img.shields.io/badge/Build-Maven-orange)
 
-> A modern take on the classic naval warfare game, designed for the XVII century setting with updated software engineering patterns.
+A Java-based Battleship simulation project developed as part of the Software Engineering coursework at ISCTE-IUL.
 
 ---
 
 ## 📖 Table of Contents
+
 - [Project Overview](#-project-overview)
 - [Key Features](#-key-features)
+- [PDF Export](#-pdf-export)
 - [Technical Stack](#-technical-stack)
 - [Installation & Setup](#-installation--setup)
-- [Code Architecture](#-code-architecture)
-- [Roadmap](#-roadmap)
+- [Documentation](#-documentation)
+- [Testing](#-testing)
 - [Contributing](#-contributing)
 
 ---
 
 ## 🎯 Project Overview
-This project serves as a template and reference for students learning **Object-Oriented Programming (OOP)** and **Software Quality**. It simulates a battleship environment where players must strategically place ships and sink the enemy fleet.
 
-### 🎮 The Rules
-The game is played on a grid (typically 10x10). The coordinate system is defined as:
+Battleship 2.0 is a Java application that simulates naval battles on a 10×10 board.
 
-$$(x, y) \in \{0, \dots, 9\} \times \{0, \dots, 9\}$$
+Players can generate a fleet, fire shots at selected positions and inspect the results of each move.
 
-Hits are calculated based on the intersection of the shot vector and the ship's bounding box.
+The simulation ends when all ships have been sunk.
+
+The project uses Maven for dependency management and GitHub for collaborative development.
 
 ---
 
 ## ✨ Key Features
+
 | Feature | Description | Status |
-| :--- | :--- | :---: |
-| **Grid System** | Flexible $N \times N$ board generation. | ✅ |
-| **Ship Varieties** | Galleons, Frigates, and Brigantines (XVII Century theme). | ✅ |
-| **AI Opponent** | Heuristic-based targeting system. | 🚧 |
-| **Network Play** | Socket-based multiplayer. | ❌ |
+|---|---|---|
+| Fleet generation | Randomly generates a fleet of ships | ✅ Implemented |
+| Custom fleet | Allows users to configure a fleet | ✅ Implemented |
+| Shot simulation | Processes shots and displays their results | ✅ Implemented |
+| Game statistics | Displays hits, misses and fleet status | ✅ Implemented |
+| PDF export | Exports the game history to a PDF report | 🔄 Pull Request #2 |
+| AI opponent | Planned for a future sprint | 🚧 Planned |
+
+---
+
+## 📄 PDF Export
+
+### Description
+
+A new feature was developed to export the history of a Battleship game to a PDF document.
+
+This feature uses **Apache PDFBox 3.0.5**, an external Java library available through Maven Central.
+
+The implementation is associated with:
+
+- [Issue #1 — Exportar histórico de jogadas para PDF](https://github.com/LETI-129807/Battleship2/issues/1)
+- [Pull Request #2 — Implement PDF game history export](https://github.com/LETI-129807/Battleship2/pull/2)
+
+### How to use
+
+Run the application and enter the following commands:
+
+```text
+gerafrota
+rajada A1 B3 C5
+rajada D2 E4 F6
+exportpdf
+desisto
+```
+
+The `exportpdf` command generates a PDF file in the application's working directory.
+
+The report includes the recorded moves, shot coordinates, shot results and game statistics.
+
+### PDF report information
+
+The generated report contains:
+
+- Total number of moves.
+- Shot positions and results.
+- Successful hits.
+- Repeated and invalid shots.
+- Sunk and remaining ships.
+- Total recorded shots.
+
+The generated filename includes a timestamp, allowing multiple reports to be saved.
+
+### Implementation
+
+The feature is implemented primarily in:
+
+- `PdfExporter.java` — Generates the PDF report using Apache PDFBox.
+- `Tasks.java` — Provides the `exportpdf` command.
+- `pom.xml` — Declares the Apache PDFBox dependency.
 
 ---
 
 ## 🛠 Technical Stack
-* **Language:** Java 17
-* **Build Tool:** Maven / Gradle
-* **Testing:** JUnit 5
-* **Logging:** Log4j2
+
+- **Language:** Java 21
+- **Build Tool:** Apache Maven
+- **Testing:** JUnit
+- **Logging:** Log4j2
+- **PDF Generation:** Apache PDFBox 3.0.5
+- **Version Control:** Git and GitHub
+- **IDE:** IntelliJ IDEA
 
 ---
 
 ## 🚀 Installation & Setup
 
 ### Prerequisites
-* JDK 17 or higher
-* Git
 
-### Step-by-Step
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/britoeabreu/Battleship2.git](https://github.com/britoeabreu/Battleship2.git)
-   ```
-2. **Navigate to directory:**
-   ```bash
-   cd Battleship2
-   ```
-3. **Compile and Run:**
-   ```bash
-   javac Main.java && java Main
-   ```
+- Java Development Kit (JDK) 21 or later
+- Apache Maven
+- Git
+- IntelliJ IDEA (recommended)
+
+### Clone the repository
+
+```bash
+git clone https://github.com/LETI-129807/Battleship2.git
+```
+
+### Navigate to the project
+
+```bash
+cd Battleship2
+```
+
+### Compile the project
+
+```bash
+mvn clean compile
+```
+
+### Run the application
+
+Open the project in IntelliJ IDEA and execute the `main` method in `Main.java`.
+
+### Available commands
+
+| Command | Description |
+|---|---|
+| `ajuda` | Displays the available commands |
+| `gerafrota` | Generates a random fleet |
+| `lefrota` | Creates a custom fleet |
+| `rajada` | Fires a sequence of shots |
+| `mapa` | Displays the fleet board |
+| `estado` | Displays fleet status |
+| `tiros` | Displays the shot board |
+| `simula` | Simulates a complete game |
+| `exportpdf` | Exports the game history to PDF |
+| `desisto` | Exits the application |
+
+**Note:** The `exportpdf` command is available in the `feature/129807-export-pdf` branch until its Pull Request is merged into `main`.
 
 ---
 
 ## 📚 Documentation
 
-You can access the generated Javadoc here:
+The project's generated Javadoc is available through GitHub Pages:
 
-👉 [Battleship2 API Documentation](https://britoeabreu.github.io/Battleship2/)
+👉 [Battleship2 API Documentation](https://leti-129807.github.io/Battleship2/)
 
+To generate Javadoc locally:
 
-### Core Logic
-```java
-public class Ship {
-    private String name;
-    private int size;
-    private boolean isSunk;
-
-    // TODO: Implement damage logic
-    public void hit() {
-        // Implementation here
-    }
-}
+```bash
+mvn javadoc:javadoc
 ```
-
-### Design Patterns Used:
-- **Strategy Pattern:** For different AI difficulty levels.
-- **Observer Pattern:** To update the UI when a ship is hit.
-</details>
-
-### Logic Flow
-```mermaid
-graph TD
-    A[Start Game] --> B{Place Ships}
-    B --> C[Player Turn]
-    C --> D[Target Coordinate]
-    D --> E{Hit or Miss?}
-    E -- Hit --> F[Check if Sunk]
-    E -- Miss --> G[AI Turn]
-    F --> G
-    G --> C
-```
-
----
-
-## 🗺 Roadmap
-- [x] Basic grid implementation
-- [x] Ship placement validation
-- [ ] Add sound effects (SFX)
-- [ ] Implement "Fog of War" mechanic
-- [ ] **Multiplayer Integration** (High Priority)
 
 ---
 
 ## 🧪 Testing
-We use high-coverage unit testing to ensure game stability. Run tests using:
+
+The project uses Maven to compile and run automated tests.
+
+Run:
+
 ```bash
 mvn test
 ```
 
-> [!TIP]
-> Use the `-Dtest=ClassName` flag to run specific test suites during development.
+The PDF export functionality has also been tested manually by generating fleets, executing multiple moves and opening the resulting PDF documents.
+
+The Maven CI workflows associated with Pull Request #2 have completed successfully.
+
+---
+
+## 🤖 AI-Assisted Development
+
+ChatGPT was used as a development support tool during the implementation of the PDF export feature.
+
+Its use included:
+
+- Understanding Maven dependencies and Apache PDFBox.
+- Supporting the implementation of PDF generation.
+- Explaining Java code and project structure.
+- Helping identify errors in GitHub Actions workflows.
+- Supporting testing and documentation.
+
+The generated suggestions were checked through compilation, program execution and manual inspection of the exported PDF reports.
+
+---
+
+## 🗺 Roadmap
+
+- [x] Fleet generation and shot simulation
+- [x] Maven project configuration
+- [x] GitHub repository setup
+- [x] GitHub Pages documentation
+- [x] PDF export implementation in feature branch
+- [ ] Peer review and merge of PDF export
+- [ ] Integration of other group members' features
+- [ ] AI opponent in the next sprint
+- [ ] Final demonstration video
 
 ---
 
 ## 🤝 Contributing
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a **Pull Request**
+Each group member implements a different feature using an external Java library from Maven Central.
+
+The development workflow consists of creating a GitHub Issue, implementing the feature in a dedicated branch, opening a Pull Request and requesting a review from another group member.
+
+Feature branches must include the student's identification number.
+
+---
+
+## 🎥 Demonstration Video
+
+The group demonstration video will be added here after the integration of all features.
+
+The video will be published on YouTube and will have a maximum duration of five minutes.
 
 ---
 
-## 📄 License
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-**Maintained by:** [@britoeabreu](https://github.com/britoeabreu)  
-*Created for the Software Engineering students at ISCTE-IUL.*
+**Project:** Battleship2  
+**Institution:** ISCTE-IUL  
+**Repository:** https://github.com/LETI-129807/Battleship2
