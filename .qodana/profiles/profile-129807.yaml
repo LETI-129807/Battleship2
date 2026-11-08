@@ -1,6 +1,5 @@
-
-# 129807 - Long Parameter List
 profile:
+  name: LongParameterList129807
   base:
     name: empty
   inspections:
