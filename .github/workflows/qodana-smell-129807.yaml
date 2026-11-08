@@ -1,4 +1,3 @@
-
 # 129807 - Long Parameter List
 name: Qodana smell gate 129807
 
@@ -24,6 +23,6 @@ jobs:
 
       - uses: JetBrains/qodana-action@v2026.2
         with:
-          args: --config qodana-129807.yaml --profile-path .qodana/profiles/profile-129807.yaml
+          args: --config qodana-129807.yaml
           use-annotations: true
           post-pr-comment: true
