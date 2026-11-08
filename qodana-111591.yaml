@@ -3,7 +3,7 @@ version: "1.0"
 linter: jetbrains/qodana-jvm-community:2025.3
 projectJDK: "21"
 profile:
-  path: profile-111591.yaml
+  path: .qodana/profiles/profile-111591.yaml
 failureConditions:
   severityThresholds:
     critical: 0
