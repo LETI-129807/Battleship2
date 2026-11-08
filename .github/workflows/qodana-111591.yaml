@@ -1,0 +1,14 @@
+# 111591 - Manuel Pereira
+name: Qodana Gate 111591
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  qodana:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: JetBrains/qodana-action@v2025.3
+        with:
+          args: --config qodana-111591.yaml
