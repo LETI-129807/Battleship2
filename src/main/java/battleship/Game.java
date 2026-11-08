@@ -447,32 +447,9 @@ public class Game implements IGame
 	}
 
 	public void over() {
-			System.out.println();
-			System.out.println("+--------------------------------------------------------------+");
-			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
-			System.out.println("+--------------------------------------------------------------+");
-	}
-
-	public void metodoGiganteDeTeste() {
-		System.out.println("linha 1");
-		System.out.println("linha 2");
-		System.out.println("linha 3");
-		System.out.println("linha 4");
-		System.out.println("linha 5");
-		System.out.println("linha 6");
-		System.out.println("linha 7");
-		System.out.println("linha 8");
-		System.out.println("linha 9");
-		System.out.println("linha 10");
-		System.out.println("linha 11");
-		System.out.println("linha 12");
-		System.out.println("linha 13");
-		System.out.println("linha 14");
-		System.out.println("linha 15");
-		System.out.println("linha 16");
-		System.out.println("linha 17");
-		System.out.println("linha 18");
-		System.out.println("linha 19");
-		System.out.println("linha 20");
+		System.out.println();
+		System.out.println("+--------------------------------------------------------------+");
+		System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
+		System.out.println("+--------------------------------------------------------------+");
 	}
 }
