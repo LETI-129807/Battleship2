@@ -1,0 +1,9 @@
+# 111591 - Manuel Pereira
+profile:
+  base:
+    name: empty
+  inspections:
+    - inspection: OverlyLongMethod
+      enabled: true
+      options:
+        m: 16
