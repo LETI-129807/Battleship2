@@ -240,15 +240,6 @@ public class PdfExporter {
     }
 
 
-    public void testeLongParameterList(
-            int parametro1,
-            int parametro2,
-            int parametro3,
-            int parametro4,
-            int parametro5,
-            int parametro6) {
-
-        System.out.println(parametro1 + parametro2 + parametro3 + parametro4 + parametro5 + parametro6);
-    }
+    s
 
 }
