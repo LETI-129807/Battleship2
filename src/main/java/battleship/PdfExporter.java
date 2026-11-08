@@ -239,7 +239,7 @@ public class PdfExporter {
         }
     }
 
-    public void Calcular_Pontos() {
+    public void calcularPontos() {
         System.out.println("Teste Checkstyle");
     }
 }
