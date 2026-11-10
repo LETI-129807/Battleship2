@@ -283,40 +283,60 @@ public class Game implements IGame
 	 */
 	public String readEnemyFire(Scanner in) {
 
-		assert in != null;
 
-		String input = in.nextLine().trim();
+		List<IPosition> enemyShots = new ArrayList<>();
+		// Limpar eventuais quebras de linha pendentes do Scanner
+		if (in.hasNextLine()) {
+			// Guarda a primeira linha enviada
+			String firstLine = in.nextLine().trim();
 
-		// Criar lista para armazenar os tiros
-		List<IPosition> shots = new ArrayList<>();
-
-		Scanner inputScanner = new Scanner(input);
-		while (shots.size() < NUMBER_SHOTS && inputScanner.hasNext()) {
-			// Lê a próxima parte e constrói uma posição
-			String token = inputScanner.next();
-
-			if (token.matches("[A-Za-z]")) {
-				// Caso seja somente uma coluna ("A", "B", etc.), esperar o próximo número
-				if (inputScanner.hasNextInt()) {
-					int row = inputScanner.nextInt();
-					shots.add(new Position(token.toUpperCase().charAt(0), row));
-				} else {
-					throw new IllegalArgumentException("Posição incompleta! A coluna '" + token + "' não é seguida por uma linha.");
-				}
-			} else {
-				// Caso o token já contenha a coluna e a linha juntas (ex.: "A3")
-				Scanner singleScanner = new Scanner(token);
-				shots.add(Tasks.readClassicPosition(singleScanner));
+			// Se a linha estiver vazia, tenta ler a seguinte
+			while (firstLine.isEmpty() && in.hasNextLine()) {
+				firstLine = in.nextLine().trim();
 			}
+
+			//caso o input esteja em Json
+			if (firstLine.startsWith("[")) {
+				StringBuilder jsonBuilder = new StringBuilder(firstLine);
+
+				// Se o JSON vier em múltiplas linhas, lê até encontrar o ']'
+				if (!firstLine.contains("]")) {
+					while (in.hasNextLine()) {
+						String line = in.nextLine();
+						jsonBuilder.append("\n").append(line);
+						if (line.trim().endsWith("]")) {
+							break;
+						}
+					}
+				}
+
+				// Desserializa usando o leitor JSON da classe Move
+				enemyShots = Move.parseShotsFromJson(jsonBuilder.toString());
+
+				//caso o input seja em formato clássico
+			} else {
+				// Cria um Scanner auxiliar para processar apenas a linha clássica introduzida
+				Scanner lineScanner = new Scanner(firstLine);
+				while (lineScanner.hasNext() && enemyShots.size() < NUMBER_SHOTS) {
+					try {
+						// Utiliza o teu método tradicional de leitura de posições
+						IPosition pos = Tasks.readClassicPosition(lineScanner);
+						enemyShots.add(pos);
+					} catch (Exception e) {
+						break;
+					}
+				}
+				lineScanner.close();
+			}
+			if (enemyShots.size() != NUMBER_SHOTS) {
+				throw new IllegalArgumentException("Foram lidos " + enemyShots.size() +
+						" tiros válidos. A rajada deve conter exatamente " + NUMBER_SHOTS + " posições!");
+			}
+
+			// Executa a jogada e gera a resposta (JSON / relatório)
 		}
-
-		if (shots.size() != NUMBER_SHOTS) {
-			throw new IllegalArgumentException("Você deve inserir exatamente " + NUMBER_SHOTS + " posições!");
-		}
-
-		this.fireShots(shots);
-
-		return Game.jsonShots(shots);
+		this.fireShots(enemyShots);
+		return "";
 	}
 
 	/**
