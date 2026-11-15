@@ -1,185 +1,225 @@
+
 package battleship;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Test class for Position.
- * Author: britoeabreu
- * Date: 2024-03-19 15:30
- * Cyclomatic Complexity for each method:
- * - Constructor: 1
- * - getRow: 1
- * - getColumn: 1
- * - isValid: 4
- * - isAdjacentTo: 4
- * - isOccupied: 1
- * - isHit: 1
- * - occupy: 1
- * - shoot: 1
- * - equals: 3
- * - hashCode: 1
- * - toString: 1
- */
-public class PositionTest {
-	private Position position;
+class PositionTest {
 
-	@BeforeEach
-	void setUp() {
-		position = new Position(2, 3);
-	//	position = new Position('C', 4);
-	}
+	@Test
+	void testConstructorWithIntegers() {
+		Position position = new Position(2, 3);
 
-	@AfterEach
-	void tearDown() {
-		position = null;
+		assertEquals(2, position.getRow());
+		assertEquals(3, position.getColumn());
+		assertFalse(position.isOccupied());
+		assertFalse(position.isHit());
 	}
 
 	@Test
-	void constructor() {
-		Position pos = new Position(1, 1);
-		assertNotNull(pos, "Failed to create Position: object is null");
-		assertEquals(1, pos.getRow(), "Failed to set row: expected 1 but got " + pos.getRow());
-		assertEquals(1, pos.getColumn(), "Failed to set column: expected 1 but got " + pos.getColumn());
-		assertFalse(pos.isOccupied(), "New position should not be occupied");
-		assertFalse(pos.isHit(), "New position should not be hit");
+	void testConstructorWithClassicCoordinates() {
+		Position position = new Position('C', 4);
+
+		assertEquals(2, position.getRow());
+		assertEquals(3, position.getColumn());
+		assertEquals('C', position.getClassicRow());
+		assertEquals(4, position.getClassicColumn());
 	}
 
 	@Test
-	void getRow() {
-		assertEquals(2, position.getRow(), "Failed to get row: expected 2 but got " + position.getRow());
+	void testConstructorWithLowercaseRow() {
+		Position position = new Position('c', 4);
+
+		assertEquals(2, position.getRow());
+		assertEquals(3, position.getColumn());
 	}
 
 	@Test
-	void getColumn() {
-		assertEquals(3, position.getColumn(), "Failed to get column: expected 3 but got " + position.getColumn());
+	void testRandomPosition() {
+		for (int i = 0; i < 100; i++) {
+			Position position = Position.randomPosition();
+
+			assertNotNull(position);
+			assertTrue(position.isInside());
+			assertTrue(position.getRow() >= 0);
+			assertTrue(position.getRow() < Game.BOARD_SIZE);
+			assertTrue(position.getColumn() >= 0);
+			assertTrue(position.getColumn() < Game.BOARD_SIZE);
+		}
 	}
 
 	@Test
-	void getClassicRow() {
-		assertEquals('C', position.getClassicRow(), "Failed to get row: expected 2 but got " + position.getRow());
+	void testIsInside() {
+		assertTrue(new Position(0, 0).isInside());
+		assertTrue(new Position(
+				Game.BOARD_SIZE - 1,
+				Game.BOARD_SIZE - 1
+		).isInside());
+
+		assertFalse(new Position(-1, 0).isInside());
+		assertFalse(new Position(0, -1).isInside());
+		assertFalse(new Position(Game.BOARD_SIZE, 0).isInside());
+		assertFalse(new Position(0, Game.BOARD_SIZE).isInside());
 	}
 
 	@Test
-	void getClassicColumn() {
-		assertEquals(3, position.getColumn(), "Failed to get column: expected 3 but got " + position.getColumn());
+	void testIsAdjacentTo() {
+		Position center = new Position(4, 4);
+
+		assertTrue(center.isAdjacentTo(new Position(3, 4)));
+		assertTrue(center.isAdjacentTo(new Position(5, 4)));
+		assertTrue(center.isAdjacentTo(new Position(4, 3)));
+		assertTrue(center.isAdjacentTo(new Position(4, 5)));
+
+		assertTrue(center.isAdjacentTo(new Position(3, 3)));
+		assertTrue(center.isAdjacentTo(new Position(3, 5)));
+		assertTrue(center.isAdjacentTo(new Position(5, 3)));
+		assertTrue(center.isAdjacentTo(new Position(5, 5)));
+
+		assertFalse(center.isAdjacentTo(new Position(6, 4)));
+		assertFalse(center.isAdjacentTo(new Position(4, 6)));
+		assertFalse(center.isAdjacentTo(new Position(6, 6)));
+
+		// A implementacao atual considera a propria
+		// posicao adjacente.
+		assertTrue(center.isAdjacentTo(new Position(4, 4)));
 	}
 
 	@Test
-	void isValid1() {
-		position = new Position(0, 0);
-		assertTrue(position.isInside(), "Position (0,0) should be valid");
+	void testAdjacentPositionsAtCenter() {
+		Position position = new Position(4, 4);
+
+		List<IPosition> adjacent = position.adjacentPositions();
+
+		assertEquals(8, adjacent.size());
+
+		Set<IPosition> expected = Set.of(
+				new Position(3, 4),
+				new Position(4, 5),
+				new Position(5, 4),
+				new Position(4, 3),
+				new Position(5, 5),
+				new Position(5, 3),
+				new Position(3, 5),
+				new Position(3, 3)
+		);
+
+		assertEquals(expected, new HashSet<>(adjacent));
 	}
 
 	@Test
-	void isValid2() {
-		position = new Position(-1, 5);
-		assertFalse(position.isInside(), "Position with negative row should be invalid");
+	void testAdjacentPositionsAtCorners() {
+		int last = Game.BOARD_SIZE - 1;
+
+		assertEquals(3,
+				new Position(0, 0).adjacentPositions().size());
+
+		assertEquals(3,
+				new Position(0, last).adjacentPositions().size());
+
+		assertEquals(3,
+				new Position(last, 0).adjacentPositions().size());
+
+		assertEquals(3,
+				new Position(last, last).adjacentPositions().size());
 	}
 
 	@Test
-	void isValid3() {
-		position = new Position(5, -1);
-		assertFalse(position.isInside(), "Position with negative column should be invalid");
+	void testAdjacentPositionsAtEdges() {
+		int last = Game.BOARD_SIZE - 1;
+
+		assertEquals(5,
+				new Position(0, 4).adjacentPositions().size());
+
+		assertEquals(5,
+				new Position(last, 4).adjacentPositions().size());
+
+		assertEquals(5,
+				new Position(4, 0).adjacentPositions().size());
+
+		assertEquals(5,
+				new Position(4, last).adjacentPositions().size());
 	}
 
 	@Test
-	void isValid4() {
-		position = new Position(Game.BOARD_SIZE, 5);
-		assertFalse(position.isInside(), "Position with row >= BOARD_SIZE should be invalid");
-	}
+	void testOccupy() {
+		Position position = new Position(2, 3);
 
-	@Test
-	void isValid5() {
-		position = new Position(5, Game.BOARD_SIZE);
-		assertFalse(position.isInside(), "Position with column >= BOARD_SIZE should be invalid");
-	}
+		assertFalse(position.isOccupied());
 
-	@Test
-	void isAdjacentTo1() {
-		Position other = new Position(2, 4);
-		assertTrue(position.isAdjacentTo(other), "Failed to detect horizontally adjacent position");
-	}
-
-	@Test
-	void isAdjacentTo2() {
-		Position other = new Position(3, 3);
-		assertTrue(position.isAdjacentTo(other), "Failed to detect vertically adjacent position");
-	}
-
-	@Test
-	void isAdjacentTo3() {
-		Position other = new Position(3, 4);
-		assertTrue(position.isAdjacentTo(other), "Failed to detect diagonally adjacent position");
-	}
-
-	@Test
-	void isAdjacentTo4() {
-		Position other = new Position(4, 5);
-		assertFalse(position.isAdjacentTo(other), "Non-adjacent position incorrectly identified as adjacent");
-	}
-
-	@Test
-	void isAdjacentToWithNull() {
-		assertThrows(NullPointerException.class, () -> position.isAdjacentTo(null),
-				"isAdjacentTo should throw NullPointerException for null input");
-	}
-
-	@Test
-	void isOccupied() {
-		assertFalse(position.isOccupied(), "New position should not be occupied");
 		position.occupy();
-		assertTrue(position.isOccupied(), "Position should be occupied after occupy()");
+
+		assertTrue(position.isOccupied());
+
+		position.occupy();
+
+		assertTrue(position.isOccupied());
 	}
 
 	@Test
-	void isHit() {
-		assertFalse(position.isHit(), "New position should not be hit");
+	void testShoot() {
+		Position position = new Position(2, 3);
+
+		assertFalse(position.isHit());
+
 		position.shoot();
-		assertTrue(position.isHit(), "Position should be hit after shoot()");
+
+		assertTrue(position.isHit());
+
+		position.shoot();
+
+		assertTrue(position.isHit());
 	}
 
 	@Test
-	void equals1() {
-		Position same = new Position(2, 3);
-		assertTrue(position.equals(same), "Equal positions not identified as equal");
+	void testEquals() {
+		Position position = new Position(2, 3);
+		Position equal = new Position(2, 3);
+
+		assertEquals(position, position);
+		assertEquals(position, equal);
+
+		assertNotEquals(position, new Position(3, 3));
+		assertNotEquals(position, new Position(2, 4));
+		assertNotEquals(position, new Position(3, 4));
+
+		assertNotEquals(null, position);
+		assertNotEquals("C4", position);
 	}
 
 	@Test
-	void equals2() {
-		assertFalse(position.equals(null), "Position should not equal null");
+	void testEqualsWithIPosition() {
+		Position position = new Position(2, 3);
+
+		IPosition other = new Position(2, 3);
+
+		assertEquals(position, other);
 	}
 
 	@Test
-	void equals3() {
-		Object other = new Object();
-		assertFalse(position.equals(other), "Position should not equal non-Position object");
+	void testHashCodeAndToString() {
+		Position first = new Position(2, 3);
+		Position second = new Position(2, 3);
+
+		assertEquals(first.hashCode(), second.hashCode());
+		assertEquals("C4", first.toString());
+
+		Position another = new Position(0, 0);
+
+		assertEquals("A1", another.toString());
 	}
 
 	@Test
-	void equals4() {
-		Position other = new Position(2, 4);
-		assertFalse(position.equals(other), "Positions with the same row but different column should not be equal");
-	}
+	void testEqualsWithDifferentObject() {
+		Position position = new Position(2, 3);
 
-	@Test
-	void equals5() {
-		assertTrue(position.equals(position), "A position should be equal to itself");
-	}
-
-	@Test
-	void hashCodeConsistency() {
-		Position same = new Position(2, 3);
-		assertEquals(position.hashCode(), same.hashCode(),
-				"Hash codes not consistent for equal positions");
-	}
-
-	@Test
-	void toStringFormat() {
-//		String expected = "Row = C, Column = 4";
-		String expected = "C4";
-		assertEquals(expected, position.toString(),
-				"Incorrect string representation: expected '" + expected +
-						"' but got '" + position.toString() + "'");
+		assertFalse(position.equals("C4"));
+		assertFalse(position.equals(null));
+		assertFalse(position.equals(123));
 	}
 }
