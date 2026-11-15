@@ -1,25 +1,19 @@
 
 package battleship;
 
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.pdfbox.text.PDFTextStripper;
-
-
-import java.util.ArrayList;
-
-
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class PdfExporterTest {
 
@@ -35,63 +29,118 @@ public class PdfExporterTest {
         game = null;
     }
 
+    // Metodo auxiliar para exportar e ler o PDF
+    private String exportAndRead(IGame gameToExport)
+            throws Exception {
+
+        Path file = Files.createTempFile(
+                "battleship-", ".pdf"
+        );
+
+        try {
+            PdfExporter.export(
+                    gameToExport, file.toString()
+            );
+
+            assertTrue(Files.size(file) > 0);
+
+            try (PDDocument document =
+                         Loader.loadPDF(file.toFile())) {
+
+                assertTrue(
+                        document.getNumberOfPages() >= 1
+                );
+
+                return new PDFTextStripper()
+                        .getText(document);
+            }
+
+        } finally {
+            Files.deleteIfExists(file);
+        }
+    }
+
+    // Metodo auxiliar para criar uma jogada
+    private IMove createMove(
+            List<IPosition> shots,
+            List<IGame.ShotResult> results) {
+
+        IMove move = mock(IMove.class);
+
+        when(move.getNumber()).thenReturn(1);
+        when(move.getShots()).thenReturn(shots);
+        when(move.getShotResults()).thenReturn(results);
+
+        return move;
+    }
+
+    // Metodo auxiliar para criar um jogo simulado
+    private IGame createGame(List<IMove> moves) {
+
+        IGame gameMock = mock(IGame.class);
+
+        when(gameMock.getAlienMoves())
+                .thenReturn(moves);
+
+        return gameMock;
+    }
+
     @Test
-    @DisplayName("Não deve exportar quando o jogo é null")
+    @DisplayName("Nao deve exportar quando o jogo e null")
     void export1() {
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> PdfExporter.export(null, "teste.pdf"),
-                "Deveria lançar IllegalArgumentException quando o jogo é null"
-        );
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> PdfExporter.export(
+                                null, "teste.pdf"
+                        )
+                );
 
         assertEquals(
                 "E necessario iniciar um jogo antes de exportar.",
-                exception.getMessage(),
-                "A mensagem de erro não corresponde à esperada"
+                exception.getMessage()
         );
     }
 
     @Test
-    @DisplayName("Não deve exportar quando o nome do ficheiro é null")
+    @DisplayName("Nao deve exportar quando o nome e null")
     void export2() {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> PdfExporter.export(game, null),
-                "Deveria lançar IllegalArgumentException quando o nome é null"
+                () -> PdfExporter.export(game, null)
         );
     }
 
     @Test
-    @DisplayName("Não deve exportar quando o nome do ficheiro está vazio")
+    @DisplayName("Nao deve exportar quando o nome esta vazio")
     void export3() {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> PdfExporter.export(game, ""),
-                "Deveria lançar IllegalArgumentException quando o nome está vazio"
+                () -> PdfExporter.export(game, "")
         );
     }
 
     @Test
-    @DisplayName("Deve criar um ficheiro PDF válido")
+    @DisplayName("Deve criar um ficheiro PDF valido")
     void export4() throws Exception {
 
-        Path file = Files.createTempFile("battleship-", ".pdf");
+        Path file = Files.createTempFile(
+                "battleship-", ".pdf"
+        );
 
         try {
             PdfExporter.export(game, file.toString());
 
-            assertTrue(
-                    Files.size(file) > 0,
-                    "Erro: o ficheiro PDF deveria conter dados"
-            );
+            assertTrue(Files.size(file) > 0);
 
-            try (PDDocument document = Loader.loadPDF(file.toFile())) {
+            try (PDDocument document =
+                         Loader.loadPDF(file.toFile())) {
+
                 assertTrue(
-                        document.getNumberOfPages() >= 1,
-                        "Erro: o PDF deveria ter pelo menos uma página"
+                        document.getNumberOfPages() >= 1
                 );
             }
 
@@ -101,37 +150,38 @@ public class PdfExporterTest {
     }
 
     @Test
-    @DisplayName("Não deve exportar quando o nome contém apenas espaços")
+    @DisplayName("Nao deve exportar um nome com apenas espacos")
     void export5() {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> PdfExporter.export(game, "   "),
-                "Erro: deveria lançar IllegalArgumentException para um nome em branco"
+                () -> PdfExporter.export(game, "   ")
         );
     }
 
     @Test
-    @DisplayName("Deve lançar exceção quando o histórico de jogadas é null")
+    @DisplayName("Deve lancar excecao para historico null")
     void export6() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
+        IGame gameMock = createGame(null);
 
-        when(gameMock.getAlienMoves()).thenReturn(null);
-
-        Path file = Files.createTempFile("battleship-", ".pdf");
+        Path file = Files.createTempFile(
+                "battleship-", ".pdf"
+        );
 
         try {
-            IllegalStateException exception = assertThrows(
-                    IllegalStateException.class,
-                    () -> PdfExporter.export(gameMock, file.toString()),
-                    "Erro: deveria lançar IllegalStateException quando o histórico é null"
-            );
+            IllegalStateException exception =
+                    assertThrows(
+                            IllegalStateException.class,
+                            () -> PdfExporter.export(
+                                    gameMock,
+                                    file.toString()
+                            )
+                    );
 
             assertEquals(
                     "O historico de jogadas nao esta disponivel.",
-                    exception.getMessage(),
-                    "Erro: a mensagem da exceção não corresponde à esperada"
+                    exception.getMessage()
             );
 
         } finally {
@@ -140,574 +190,393 @@ public class PdfExporterTest {
     }
 
     @Test
-    @DisplayName("Deve ignorar jogadas nulas no histórico")
+    @DisplayName("Deve ignorar jogadas nulas")
     void export7() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
+        List<IMove> moves =
+                Collections.singletonList(null);
 
-        when(gameMock.getAlienMoves()).thenReturn(
-                Arrays.asList((IMove) null)
+        IGame gameMock = createGame(moves);
+
+        String content = exportAndRead(gameMock);
+
+        assertTrue(
+                content.contains(
+                        "Total de tiros registados: 0"
+                )
         );
-
-        Path file = Files.createTempFile("battleship-", ".pdf");
-
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            assertTrue(
-                    Files.size(file) > 0,
-                    "Erro: o PDF deveria ser criado mesmo com uma jogada nula"
-            );
-
-            try (PDDocument document = Loader.loadPDF(file.toFile())) {
-                assertEquals(
-                        1,
-                        document.getNumberOfPages(),
-                        "Erro: deveria existir uma página no PDF"
-                );
-            }
-
-        } finally {
-            Files.deleteIfExists(file);
-        }
     }
 
     @Test
-    @DisplayName("Deve exportar uma jogada sem tiros registados")
+    @DisplayName("Deve exportar uma jogada sem tiros")
     void export8() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
+        IMove move = createMove(
+                List.of(),
+                List.of()
+        );
 
-        when(moveMock.getNumber()).thenReturn(1);
-        when(moveMock.getShots()).thenReturn(List.of());
-        when(gameMock.getAlienMoves()).thenReturn(List.of(moveMock));
+        IGame gameMock = createGame(
+                List.of(move)
+        );
 
-        Path file = Files.createTempFile("battleship-", ".pdf");
+        String content = exportAndRead(gameMock);
 
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            assertTrue(
-                    Files.size(file) > 0,
-                    "Erro: o PDF deveria ser criado mesmo sem tiros"
-            );
-
-            try (PDDocument document = Loader.loadPDF(file.toFile())) {
-                assertEquals(
-                        1,
-                        document.getNumberOfPages(),
-                        "Erro: o PDF deveria conter uma página"
-                );
-            }
-
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        assertTrue(
+                content.contains(
+                        "Sem tiros registados nesta jogada."
+                )
+        );
     }
 
-
-
     @Test
-    @DisplayName("Deve exportar uma jogada com um tiro na água")
+    @DisplayName("Deve identificar um tiro na agua")
     void export9() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
-        IPosition positionMock = mock(IPosition.class);
-
-        when(moveMock.getNumber()).thenReturn(1);
-        when(moveMock.getShots()).thenReturn(List.of(positionMock));
+        IPosition position = mock(IPosition.class);
 
         IGame.ShotResult result =
-                new IGame.ShotResult(true, false, null, false);
-
-        when(moveMock.getShotResults()).thenReturn(List.of(result));
-        when(gameMock.getAlienMoves()).thenReturn(List.of(moveMock));
-
-        Path file = Files.createTempFile("battleship-", ".pdf");
-
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            assertTrue(
-                    Files.size(file) > 0,
-                    "Erro: o PDF deveria conter dados"
-            );
-
-            try (PDDocument document = Loader.loadPDF(file.toFile())) {
-                assertTrue(
-                        document.getNumberOfPages() >= 1,
-                        "Erro: o PDF deveria conter pelo menos uma página"
+                new IGame.ShotResult(
+                        true, false, null, false
                 );
-            }
 
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        IMove move = createMove(
+                List.of(position),
+                List.of(result)
+        );
+
+        String content = exportAndRead(
+                createGame(List.of(move))
+        );
+
+        assertTrue(
+                content.contains("Agua")
+        );
     }
 
-
     @Test
-    @DisplayName("Deve identificar um tiro inválido no PDF")
+    @DisplayName("Deve identificar um tiro invalido")
     void export10() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
-        IPosition positionMock = mock(IPosition.class);
-
-        when(moveMock.getNumber()).thenReturn(1);
-        when(moveMock.getShots()).thenReturn(List.of(positionMock));
+        IPosition position = mock(IPosition.class);
 
         IGame.ShotResult result =
-                new IGame.ShotResult(false, false, null, false);
-
-        when(moveMock.getShotResults()).thenReturn(List.of(result));
-        when(gameMock.getAlienMoves()).thenReturn(List.of(moveMock));
-
-        Path file = Files.createTempFile("battleship-", ".pdf");
-
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            try (PDDocument document = Loader.loadPDF(file.toFile())) {
-
-                String content = new PDFTextStripper().getText(document);
-
-                assertTrue(
-                        content.contains("Tiro invalido"),
-                        "O PDF deveria identificar o tiro inválido"
+                new IGame.ShotResult(
+                        false, false, null, false
                 );
-            }
 
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        IMove move = createMove(
+                List.of(position),
+                List.of(result)
+        );
+
+        String content = exportAndRead(
+                createGame(List.of(move))
+        );
+
+        assertTrue(
+                content.contains("Tiro invalido")
+        );
     }
 
-
     @Test
-    @DisplayName("Deve identificar um tiro repetido no PDF")
+    @DisplayName("Deve identificar um tiro repetido")
     void export11() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
-        IPosition positionMock = mock(IPosition.class);
-
-        when(moveMock.getNumber()).thenReturn(1);
-        when(moveMock.getShots()).thenReturn(List.of(positionMock));
+        IPosition position = mock(IPosition.class);
 
         IGame.ShotResult result =
-                new IGame.ShotResult(true, true, null, false);
-
-        when(moveMock.getShotResults()).thenReturn(List.of(result));
-        when(gameMock.getAlienMoves()).thenReturn(List.of(moveMock));
-
-        Path file = Files.createTempFile("battleship-", ".pdf");
-
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            try (PDDocument document = Loader.loadPDF(file.toFile())) {
-
-                String content = new PDFTextStripper().getText(document);
-
-                assertTrue(
-                        content.contains("Tiro repetido"),
-                        "O PDF deveria identificar o tiro repetido"
+                new IGame.ShotResult(
+                        true, true, null, false
                 );
-            }
 
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        IMove move = createMove(
+                List.of(position),
+                List.of(result)
+        );
+
+        String content = exportAndRead(
+                createGame(List.of(move))
+        );
+
+        assertTrue(
+                content.contains("Tiro repetido")
+        );
     }
 
-
     @Test
-    @DisplayName("Deve identificar um acerto num navio no PDF")
+    @DisplayName("Deve identificar um acerto num navio")
     void export12() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
-        IPosition positionMock = mock(IPosition.class);
-        IShip shipMock = mock(IShip.class);
-
-        when(moveMock.getNumber()).thenReturn(1);
-        when(moveMock.getShots()).thenReturn(List.of(positionMock));
+        IPosition position = mock(IPosition.class);
+        IShip ship = mock(IShip.class);
 
         IGame.ShotResult result =
-                new IGame.ShotResult(true, false, shipMock, false);
-
-        when(moveMock.getShotResults()).thenReturn(List.of(result));
-        when(gameMock.getAlienMoves()).thenReturn(List.of(moveMock));
-
-        Path file = Files.createTempFile("battleship-", ".pdf");
-
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            try (PDDocument document = Loader.loadPDF(file.toFile())) {
-
-                String content = new PDFTextStripper().getText(document);
-
-                assertTrue(
-                        content.contains("Acertou num navio"),
-                        "O PDF deveria identificar um acerto num navio"
+                new IGame.ShotResult(
+                        true, false, ship, false
                 );
-            }
 
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        IMove move = createMove(
+                List.of(position),
+                List.of(result)
+        );
+
+        String content = exportAndRead(
+                createGame(List.of(move))
+        );
+
+        assertTrue(
+                content.contains("Acertou num navio")
+        );
     }
 
     @Test
-    @DisplayName("Deve identificar um navio afundado no PDF")
+    @DisplayName("Deve identificar um navio afundado")
     void export13() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
-        IPosition positionMock = mock(IPosition.class);
-        IShip shipMock = mock(IShip.class);
-
-        when(moveMock.getNumber()).thenReturn(1);
-        when(moveMock.getShots()).thenReturn(List.of(positionMock));
+        IPosition position = mock(IPosition.class);
+        IShip ship = mock(IShip.class);
 
         IGame.ShotResult result =
-                new IGame.ShotResult(true, false, shipMock, true);
-
-        when(moveMock.getShotResults()).thenReturn(List.of(result));
-        when(gameMock.getAlienMoves()).thenReturn(List.of(moveMock));
-
-        Path file = Files.createTempFile("battleship-", ".pdf");
-
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            try (PDDocument document = Loader.loadPDF(file.toFile())) {
-
-                String content = new PDFTextStripper().getText(document);
-
-                assertTrue(
-                        content.contains("Navio afundado"),
-                        "O PDF deveria identificar um navio afundado"
+                new IGame.ShotResult(
+                        true, false, ship, true
                 );
-            }
 
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        IMove move = createMove(
+                List.of(position),
+                List.of(result)
+        );
+
+        String content = exportAndRead(
+                createGame(List.of(move))
+        );
+
+        assertTrue(
+                content.contains("Navio afundado")
+        );
     }
 
     @Test
-    @DisplayName("Deve identificar uma posição desconhecida no PDF")
+    @DisplayName("Deve identificar uma posicao desconhecida")
     void export14() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
+        List<IPosition> shots =
+                Collections.singletonList(null);
 
-        when(moveMock.getNumber()).thenReturn(1);
-        when(moveMock.getShots()).thenReturn(
-                java.util.Collections.singletonList(null)
+        IMove move = createMove(
+                shots,
+                List.of()
         );
 
-        when(gameMock.getAlienMoves()).thenReturn(List.of(moveMock));
+        String content = exportAndRead(
+                createGame(List.of(move))
+        );
 
-        Path file = Files.createTempFile("battleship-", ".pdf");
+        assertTrue(
+                content.contains("Posicao desconhecida")
+        );
 
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            try (PDDocument document = Loader.loadPDF(file.toFile())) {
-
-                String content = new PDFTextStripper().getText(document);
-
-                assertTrue(
-                        content.contains("Posicao desconhecida"),
-                        "O PDF deveria identificar uma posição desconhecida"
-                );
-
-                assertTrue(
-                        content.contains("Sem resultado"),
-                        "O PDF deveria indicar a ausência de resultado"
-                );
-            }
-
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        assertTrue(
+                content.contains("Sem resultado")
+        );
     }
 
-
     @Test
-    @DisplayName("Deve lidar com uma lista de resultados vazia")
+    @DisplayName("Deve lidar com resultados vazios")
     void export15() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
-        IPosition positionMock = mock(IPosition.class);
+        IPosition position = mock(IPosition.class);
 
-        when(moveMock.getNumber()).thenReturn(1);
-        when(moveMock.getShots()).thenReturn(List.of(positionMock));
-        when(moveMock.getShotResults()).thenReturn(List.of());
-
-        when(gameMock.getAlienMoves()).thenReturn(List.of(moveMock));
-
-        Path file = Files.createTempFile("battleship-", ".pdf");
-
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            try (PDDocument document = Loader.loadPDF(file.toFile())) {
-
-                String content = new PDFTextStripper().getText(document);
-
-                assertTrue(
-                        content.contains("Sem resultado"),
-                        "O PDF deveria indicar que o tiro não tem resultado"
-                );
-            }
-
-        } finally {
-            Files.deleteIfExists(file);
-        }
-    }
-
-
-    @Test
-    @DisplayName("Deve lidar com um resultado de tiro null")
-    void export16() throws Exception {
-
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
-        IPosition positionMock = mock(IPosition.class);
-
-        when(moveMock.getNumber()).thenReturn(1);
-        when(moveMock.getShots()).thenReturn(List.of(positionMock));
-
-        when(moveMock.getShotResults()).thenReturn(
-                java.util.Collections.singletonList(null)
+        IMove move = createMove(
+                List.of(position),
+                List.of()
         );
 
-        when(gameMock.getAlienMoves()).thenReturn(List.of(moveMock));
+        String content = exportAndRead(
+                createGame(List.of(move))
+        );
 
-        Path file = Files.createTempFile("battleship-", ".pdf");
-
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            try (PDDocument document = Loader.loadPDF(file.toFile())) {
-
-                String content = new PDFTextStripper().getText(document);
-
-                assertTrue(
-                        content.contains("Sem resultado"),
-                        "O PDF deveria identificar um resultado nulo"
-                );
-            }
-
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        assertTrue(
+                content.contains("Sem resultado")
+        );
     }
 
+    @Test
+    @DisplayName("Deve lidar com um resultado null")
+    void export16() throws Exception {
+
+        IPosition position = mock(IPosition.class);
+
+        List<IGame.ShotResult> results =
+                Collections.singletonList(null);
+
+        IMove move = createMove(
+                List.of(position),
+                results
+        );
+
+        String content = exportAndRead(
+                createGame(List.of(move))
+        );
+
+        assertTrue(
+                content.contains("Sem resultado")
+        );
+    }
 
     @Test
-    @DisplayName("Deve criar várias páginas quando o PDF fica cheio")
+    @DisplayName("Deve criar varias paginas")
     void export17() throws Exception {
-
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
 
         List<IPosition> shots = new ArrayList<>();
 
         for (int i = 0; i < 100; i++) {
-            shots.add(new Position(i % 10, (i / 10) % 10));
+
+            shots.add(
+                    new Position(
+                            i % 10,
+                            (i / 10) % 10
+                    )
+            );
         }
 
-        when(moveMock.getNumber()).thenReturn(1);
-        when(moveMock.getShots()).thenReturn(shots);
-        when(moveMock.getShotResults()).thenReturn(List.of());
+        IMove move = createMove(
+                shots,
+                List.of()
+        );
 
-        when(gameMock.getAlienMoves()).thenReturn(List.of(moveMock));
+        IGame gameMock = createGame(
+                List.of(move)
+        );
 
-        Path file = Files.createTempFile("battleship-", ".pdf");
-
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            try (PDDocument document = Loader.loadPDF(file.toFile())) {
-
-                assertTrue(
-                        document.getNumberOfPages() > 1,
-                        "O PDF deveria conter várias páginas"
-                );
-
-                String content = new PDFTextStripper().getText(document);
-
-                assertTrue(
-                        content.contains("Total de tiros registados: 100"),
-                        "O PDF deveria registar os 100 tiros"
-                );
-            }
-
-        } finally {
-            Files.deleteIfExists(file);
-        }
-    }
-    @Test
-    @DisplayName("Deve exportar uma jogada com lista de tiros null")
-    void export18() throws Exception {
-
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
-
-        when(moveMock.getNumber()).thenReturn(1);
-        when(moveMock.getShots()).thenReturn(null);
-
-        when(gameMock.getAlienMoves())
-                .thenReturn(List.of(moveMock));
-
-        Path file = Files.createTempFile("battleship-", ".pdf");
+        Path file = Files.createTempFile(
+                "battleship-", ".pdf"
+        );
 
         try {
-            PdfExporter.export(gameMock, file.toString());
-
-            assertTrue(Files.size(file) > 0);
+            PdfExporter.export(
+                    gameMock, file.toString()
+            );
 
             try (PDDocument document =
                          Loader.loadPDF(file.toFile())) {
 
-                assertTrue(document.getNumberOfPages() >= 1);
+                assertTrue(
+                        document.getNumberOfPages() > 1
+                );
+
+                String content =
+                        new PDFTextStripper()
+                                .getText(document);
+
+                assertTrue(
+                        content.contains(
+                                "Total de tiros registados: 100"
+                        )
+                );
             }
 
         } finally {
             Files.deleteIfExists(file);
         }
     }
-    @Test
-    @DisplayName("Deve exportar quando existem menos resultados do que tiros")
-    void export19() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
+    @Test
+    @DisplayName("Deve exportar uma lista de tiros null")
+    void export18() throws Exception {
+
+        IMove move = createMove(
+                null,
+                List.of()
+        );
+
+        String content = exportAndRead(
+                createGame(List.of(move))
+        );
+
+        assertTrue(
+                content.contains(
+                        "Sem tiros registados nesta jogada."
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("Deve lidar com menos resultados do que tiros")
+    void export19() throws Exception {
 
         IPosition position1 = mock(IPosition.class);
         IPosition position2 = mock(IPosition.class);
 
-        when(moveMock.getNumber()).thenReturn(1);
+        IGame.ShotResult result =
+                new IGame.ShotResult(
+                        true, false, null, false
+                );
 
-        when(moveMock.getShots())
-                .thenReturn(List.of(position1, position2));
+        IMove move = createMove(
+                List.of(position1, position2),
+                List.of(result)
+        );
 
-        when(moveMock.getShotResults())
-                .thenReturn(List.of(
-                        new IGame.ShotResult(true, false, null, false)
-                ));
+        String content = exportAndRead(
+                createGame(List.of(move))
+        );
 
-        when(gameMock.getAlienMoves())
-                .thenReturn(List.of(moveMock));
+        assertTrue(
+                content.contains("Agua")
+        );
 
-        Path file = Files.createTempFile("battleship-", ".pdf");
+        assertTrue(
+                content.contains("Sem resultado")
+        );
 
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            assertTrue(Files.size(file) > 0);
-
-            try (PDDocument document =
-                         Loader.loadPDF(file.toFile())) {
-
-                assertTrue(document.getNumberOfPages() >= 1);
-            }
-
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        assertTrue(
+                content.contains(
+                        "Total de tiros registados: 2"
+                )
+        );
     }
 
-
     @Test
-    @DisplayName("Deve exportar quando um resultado de tiro é null")
+    @DisplayName("Deve exportar um resultado de tiro null")
     void export20() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
-
         IPosition position = mock(IPosition.class);
 
-        when(moveMock.getNumber()).thenReturn(1);
+        List<IGame.ShotResult> results =
+                Collections.singletonList(null);
 
-        when(moveMock.getShots())
-                .thenReturn(List.of(position));
+        IMove move = createMove(
+                List.of(position),
+                results
+        );
 
-        // Lista com um resultado null
-        when(moveMock.getShotResults())
-                .thenReturn(java.util.Arrays.asList(
-                        (IGame.ShotResult) null
-                ));
+        String content = exportAndRead(
+                createGame(List.of(move))
+        );
 
-        when(gameMock.getAlienMoves())
-                .thenReturn(List.of(moveMock));
-
-        Path file = Files.createTempFile("battleship-", ".pdf");
-
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            assertTrue(Files.size(file) > 0);
-
-            try (PDDocument document =
-                         Loader.loadPDF(file.toFile())) {
-
-                assertTrue(document.getNumberOfPages() >= 1);
-            }
-
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        assertTrue(
+                content.contains("Sem resultado")
+        );
     }
-
-
 
     @Test
-    @DisplayName("Deve exportar quando a lista de resultados é null")
+    @DisplayName("Deve exportar uma lista de resultados null")
     void export21() throws Exception {
 
-        IGame gameMock = mock(IGame.class);
-        IMove moveMock = mock(IMove.class);
         IPosition position = mock(IPosition.class);
 
-        when(moveMock.getNumber()).thenReturn(1);
+        IMove move = createMove(
+                List.of(position),
+                null
+        );
 
-        // Existe um tiro
-        when(moveMock.getShots())
-                .thenReturn(List.of(position));
+        String content = exportAndRead(
+                createGame(List.of(move))
+        );
 
-        // Mas a lista de resultados é null
-        when(moveMock.getShotResults())
-                .thenReturn(null);
-
-        when(gameMock.getAlienMoves())
-                .thenReturn(List.of(moveMock));
-
-        Path file = Files.createTempFile("battleship-", ".pdf");
-
-        try {
-            PdfExporter.export(gameMock, file.toString());
-
-            assertTrue(Files.size(file) > 0);
-
-            try (PDDocument document =
-                         Loader.loadPDF(file.toFile())) {
-
-                assertTrue(document.getNumberOfPages() >= 1);
-            }
-
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        assertTrue(
+                content.contains("Sem resultado")
+        );
     }
-
 }
