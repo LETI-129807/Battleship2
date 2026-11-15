@@ -1,0 +1,357 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PdfExporter</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">battleship</a>
+</div>
+
+<h1>Coverage Summary for Class: PdfExporter (battleship)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PdfExporter</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (44/44)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (88/88)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;
+&nbsp;package battleship;
+&nbsp;
+&nbsp;import org.apache.pdfbox.pdmodel.PDDocument;
+&nbsp;import org.apache.pdfbox.pdmodel.PDPage;
+&nbsp;import org.apache.pdfbox.pdmodel.PDPageContentStream;
+&nbsp;import org.apache.pdfbox.pdmodel.common.PDRectangle;
+&nbsp;import org.apache.pdfbox.pdmodel.font.PDType1Font;
+&nbsp;import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public class PdfExporter {
+&nbsp;
+&nbsp;    private static final float MARGIN = 50;
+&nbsp;    private static final float LINE_HEIGHT = 18;
+&nbsp;
+&nbsp;    private final PDDocument document;
+&nbsp;    private PDPageContentStream contentStream;
+&nbsp;    private float currentY;
+&nbsp;
+<b class="fc">&nbsp;    private PdfExporter(PDDocument document) {</b>
+<b class="fc">&nbsp;        this.document = document;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Exporta o historico de jogadas e as estatisticas do jogo.
+&nbsp;     *
+&nbsp;     * @param game jogo a exportar
+&nbsp;     * @param fileName caminho do ficheiro PDF
+&nbsp;     * @throws IOException se ocorrer um erro ao criar o PDF
+&nbsp;     */
+&nbsp;    public static void export(IGame game, String fileName)
+&nbsp;            throws IOException {
+&nbsp;
+<b class="fc">&nbsp;        if (game == null) {</b>
+<b class="fc">&nbsp;            throw new IllegalArgumentException(</b>
+&nbsp;                    &quot;E necessario iniciar um jogo antes de exportar.&quot;
+&nbsp;            );
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (fileName == null || fileName.isBlank()) {</b>
+<b class="fc">&nbsp;            throw new IllegalArgumentException(</b>
+&nbsp;                    &quot;O nome do ficheiro PDF nao pode estar vazio.&quot;
+&nbsp;            );
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        try (PDDocument document = new PDDocument()) {</b>
+&nbsp;
+<b class="fc">&nbsp;            PdfExporter exporter = new PdfExporter(document);</b>
+&nbsp;
+&nbsp;            try {
+<b class="fc">&nbsp;                exporter.createPage();</b>
+&nbsp;
+<b class="fc">&nbsp;                exporter.writeLine(</b>
+&nbsp;                        &quot;BATTLESHIP - RELATORIO DE JOGADAS&quot;, true
+&nbsp;                );
+<b class="fc">&nbsp;                exporter.writeLine(&quot;&quot;, false);</b>
+&nbsp;
+<b class="fc">&nbsp;                List&lt;IMove&gt; moves = game.getAlienMoves();</b>
+&nbsp;
+<b class="fc">&nbsp;                if (moves == null) {</b>
+<b class="fc">&nbsp;                    throw new IllegalStateException(</b>
+&nbsp;                            &quot;O historico de jogadas nao esta disponivel.&quot;
+&nbsp;                    );
+&nbsp;                }
+&nbsp;
+&nbsp;                // Estatisticas
+<b class="fc">&nbsp;                exporter.writeLine(&quot;RESUMO DA PARTIDA&quot;, true);</b>
+<b class="fc">&nbsp;                exporter.writeLine(</b>
+<b class="fc">&nbsp;                        &quot;Total de jogadas: &quot; + moves.size(), false</b>
+&nbsp;                );
+<b class="fc">&nbsp;                exporter.writeLine(</b>
+<b class="fc">&nbsp;                        &quot;Acertos: &quot; + game.getHits(), false</b>
+&nbsp;                );
+<b class="fc">&nbsp;                exporter.writeLine(</b>
+<b class="fc">&nbsp;                        &quot;Tiros repetidos: &quot; + game.getRepeatedShots(), false</b>
+&nbsp;                );
+<b class="fc">&nbsp;                exporter.writeLine(</b>
+<b class="fc">&nbsp;                        &quot;Tiros invalidos: &quot; + game.getInvalidShots(), false</b>
+&nbsp;                );
+<b class="fc">&nbsp;                exporter.writeLine(</b>
+<b class="fc">&nbsp;                        &quot;Navios afundados: &quot; + game.getSunkShips(), false</b>
+&nbsp;                );
+<b class="fc">&nbsp;                exporter.writeLine(</b>
+<b class="fc">&nbsp;                        &quot;Navios restantes: &quot; + game.getRemainingShips(), false</b>
+&nbsp;                );
+&nbsp;
+<b class="fc">&nbsp;                exporter.writeLine(&quot;&quot;, false);</b>
+<b class="fc">&nbsp;                exporter.writeLine(&quot;HISTORICO DE TIROS&quot;, true);</b>
+<b class="fc">&nbsp;                exporter.writeLine(&quot;&quot;, false);</b>
+&nbsp;
+<b class="fc">&nbsp;                if (moves.isEmpty()) {</b>
+<b class="fc">&nbsp;                    exporter.writeLine(</b>
+&nbsp;                            &quot;Ainda nao existem jogadas registadas.&quot;, false
+&nbsp;                    );
+&nbsp;                }
+&nbsp;
+<b class="fc">&nbsp;                int totalShots = 0;</b>
+&nbsp;
+<b class="fc">&nbsp;                for (IMove move : moves) {</b>
+&nbsp;
+<b class="fc">&nbsp;                    if (move == null) {</b>
+&nbsp;                        continue;
+&nbsp;                    }
+&nbsp;
+<b class="fc">&nbsp;                    exporter.writeLine(</b>
+<b class="fc">&nbsp;                            &quot;Jogada numero &quot; + move.getNumber(), true</b>
+&nbsp;                    );
+&nbsp;
+<b class="fc">&nbsp;                    List&lt;IPosition&gt; shots = move.getShots();</b>
+<b class="fc">&nbsp;                    List&lt;IGame.ShotResult&gt; results =</b>
+<b class="fc">&nbsp;                            move.getShotResults();</b>
+&nbsp;
+<b class="fc">&nbsp;                    if (shots == null || shots.isEmpty()) {</b>
+<b class="fc">&nbsp;                        exporter.writeLine(</b>
+&nbsp;                                &quot;Sem tiros registados nesta jogada.&quot;, false
+&nbsp;                        );
+<b class="fc">&nbsp;                        exporter.writeLine(&quot;&quot;, false);</b>
+&nbsp;                        continue;
+&nbsp;                    }
+&nbsp;
+<b class="fc">&nbsp;                    totalShots += shots.size();</b>
+&nbsp;
+<b class="fc">&nbsp;                    for (int i = 0; i &lt; shots.size(); i++) {</b>
+&nbsp;
+<b class="fc">&nbsp;                        IPosition position = shots.get(i);</b>
+&nbsp;
+<b class="fc">&nbsp;                        String positionText = position == null</b>
+<b class="fc">&nbsp;                                ? &quot;Posicao desconhecida&quot;</b>
+<b class="fc">&nbsp;                                : position.toString();</b>
+&nbsp;
+<b class="fc">&nbsp;                        String resultText = &quot;Sem resultado&quot;;</b>
+&nbsp;
+<b class="fc">&nbsp;                        if (results != null</b>
+<b class="fc">&nbsp;                                &amp;&amp; i &lt; results.size()</b>
+<b class="fc">&nbsp;                                &amp;&amp; results.get(i) != null) {</b>
+&nbsp;
+<b class="fc">&nbsp;                            resultText = describeResult(results.get(i));</b>
+&nbsp;                        }
+&nbsp;
+<b class="fc">&nbsp;                        exporter.writeLine(</b>
+&nbsp;                                &quot;Tiro &quot; + (i + 1)
+&nbsp;                                        + &quot; | &quot; + positionText
+&nbsp;                                        + &quot; | &quot; + resultText,
+&nbsp;                                false
+&nbsp;                        );
+&nbsp;                    }
+&nbsp;
+<b class="fc">&nbsp;                    exporter.writeLine(&quot;&quot;, false);</b>
+&nbsp;                }
+&nbsp;
+<b class="fc">&nbsp;                exporter.writeLine(</b>
+&nbsp;                        &quot;Total de tiros registados: &quot; + totalShots, true
+&nbsp;                );
+&nbsp;
+&nbsp;            } finally {
+<b class="fc">&nbsp;                exporter.closePage();</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            document.save(fileName);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Identifica o resultado de cada tiro.
+&nbsp;     */
+&nbsp;    private static String describeResult(
+&nbsp;            IGame.ShotResult result) {
+&nbsp;
+<b class="fc">&nbsp;        if (!result.valid()) {</b>
+<b class="fc">&nbsp;            return &quot;Tiro invalido&quot;;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (result.repeated()) {</b>
+<b class="fc">&nbsp;            return &quot;Tiro repetido&quot;;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (result.ship() == null) {</b>
+<b class="fc">&nbsp;            return &quot;Agua&quot;;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (result.sunk()) {</b>
+<b class="fc">&nbsp;            return &quot;Navio afundado&quot;;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return &quot;Acertou num navio&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria uma nova pagina A4.
+&nbsp;     */
+&nbsp;    private void createPage() throws IOException {
+&nbsp;
+<b class="fc">&nbsp;        closePage();</b>
+&nbsp;
+<b class="fc">&nbsp;        PDPage page = new PDPage(PDRectangle.A4);</b>
+<b class="fc">&nbsp;        document.addPage(page);</b>
+&nbsp;
+<b class="fc">&nbsp;        contentStream = new PDPageContentStream(document, page);</b>
+&nbsp;
+<b class="fc">&nbsp;        currentY = page.getMediaBox().getHeight() - MARGIN;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Escreve uma linha no PDF.
+&nbsp;     */
+&nbsp;    private void writeLine(String text, boolean bold)
+&nbsp;            throws IOException {
+&nbsp;
+<b class="fc">&nbsp;        if (currentY &lt; MARGIN + LINE_HEIGHT) {</b>
+<b class="fc">&nbsp;            createPage();</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        PDType1Font font = new PDType1Font(</b>
+<b class="fc">&nbsp;                bold</b>
+<b class="fc">&nbsp;                        ? Standard14Fonts.FontName.HELVETICA_BOLD</b>
+<b class="fc">&nbsp;                        : Standard14Fonts.FontName.HELVETICA</b>
+&nbsp;        );
+&nbsp;
+<b class="fc">&nbsp;        contentStream.beginText();</b>
+<b class="fc">&nbsp;        contentStream.setFont(font, bold ? 13 : 11);</b>
+<b class="fc">&nbsp;        contentStream.newLineAtOffset(MARGIN, currentY);</b>
+<b class="fc">&nbsp;        contentStream.showText(text);</b>
+<b class="fc">&nbsp;        contentStream.endText();</b>
+&nbsp;
+<b class="fc">&nbsp;        currentY -= LINE_HEIGHT;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Fecha a pagina atual.
+&nbsp;     */
+&nbsp;    private void closePage() throws IOException {
+&nbsp;
+<b class="fc">&nbsp;        if (contentStream != null) {</b>
+<b class="fc">&nbsp;            contentStream.close();</b>
+<b class="fc">&nbsp;            contentStream = null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-15 21:36</div>
+</div>
+</body>
+</html>
