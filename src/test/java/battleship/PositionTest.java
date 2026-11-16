@@ -1,6 +1,7 @@
 
 package battleship;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class PositionTest {
 
 	@Test
+	@DisplayName("Verificar a criação de uma posição com coordenadas inteiras")
 	void testConstructorWithIntegers() {
 		Position position = new Position(2, 3);
 
@@ -22,6 +24,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar a criação de uma posição com coordenadas clássicas")
 	void testConstructorWithClassicCoordinates() {
 		Position position = new Position('C', 4);
 
@@ -32,6 +35,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar a criação de uma posição com letra minúscula")
 	void testConstructorWithLowercaseRow() {
 		Position position = new Position('c', 4);
 
@@ -40,6 +44,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar a geração de posições aleatórias dentro do tabuleiro")
 	void testRandomPosition() {
 		for (int i = 0; i < 100; i++) {
 			Position position = Position.randomPosition();
@@ -54,6 +59,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar se uma posição está dentro dos limites do tabuleiro")
 	void testIsInside() {
 		assertTrue(new Position(0, 0).isInside());
 		assertTrue(new Position(
@@ -68,6 +74,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar se duas posições são adjacentes")
 	void testIsAdjacentTo() {
 		Position center = new Position(4, 4);
 
@@ -91,6 +98,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar as oito posições adjacentes no centro do tabuleiro")
 	void testAdjacentPositionsAtCenter() {
 		Position position = new Position(4, 4);
 
@@ -113,6 +121,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar as três posições adjacentes nos cantos do tabuleiro")
 	void testAdjacentPositionsAtCorners() {
 		int last = Game.BOARD_SIZE - 1;
 
@@ -130,6 +139,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar as cinco posições adjacentes nas bordas do tabuleiro")
 	void testAdjacentPositionsAtEdges() {
 		int last = Game.BOARD_SIZE - 1;
 
@@ -147,6 +157,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar a ocupação de uma posição")
 	void testOccupy() {
 		Position position = new Position(2, 3);
 
@@ -162,6 +173,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar a marcação de uma posição atingida por um tiro")
 	void testShoot() {
 		Position position = new Position(2, 3);
 
@@ -177,6 +189,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar a igualdade entre posições")
 	void testEquals() {
 		Position position = new Position(2, 3);
 		Position equal = new Position(2, 3);
@@ -193,6 +206,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar a igualdade entre Position e IPosition")
 	void testEqualsWithIPosition() {
 		Position position = new Position(2, 3);
 
@@ -202,6 +216,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar o hashCode e a representação textual das posições")
 	void testHashCodeAndToString() {
 		Position first = new Position(2, 3);
 		Position second = new Position(2, 3);
@@ -215,6 +230,7 @@ class PositionTest {
 	}
 
 	@Test
+	@DisplayName("Verificar a comparação de uma posição com objetos diferentes")
 	void testEqualsWithDifferentObject() {
 		Position position = new Position(2, 3);
 

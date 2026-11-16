@@ -3,6 +3,7 @@ package battleship;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -36,6 +37,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Verificar a representação textual da jogada")
     void testToString() {
         Move move = new Move(
                 3,
@@ -50,12 +52,14 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Obter o número da jogada")
     void getNumber() {
         assertEquals(7, new Move(
                 7, List.of(), List.of()).getNumber());
     }
 
     @Test
+    @DisplayName("Obter as posições dos tiros da jogada")
     void getShots() {
         List<IPosition> shots = List.of(
                 new Position(0, 0),
@@ -68,6 +72,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Obter os resultados dos tiros da jogada")
     void getShotResults() {
         List<IGame.ShotResult> results = List.of(
                 result(true, false, null, false)
@@ -79,6 +84,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar um tiro válido que falha o navio")
     void processEnemyFire() throws Exception {
         JsonNode data = json(move(
                 result(true, false, null, false)
@@ -92,6 +98,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar tiros inválidos fora do tabuleiro")
     void invalidShots() throws Exception {
         JsonNode data = json(move(
                 result(false, false, null, false)
@@ -103,6 +110,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar um tiro repetido")
     void repeatedShots() throws Exception {
         JsonNode data = json(move(
                 result(true, true, null, false)
@@ -113,6 +121,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar múltiplos tiros repetidos")
     void multipleRepeatedShots() throws Exception {
         JsonNode data = json(move(
                 result(true, true, null, false),
@@ -123,6 +132,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar um tiro que acerta num navio")
     void hitShip() throws Exception {
         IShip boat = ship("Fragata");
 
@@ -141,6 +151,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar múltiplos acertos em navios do mesmo tipo")
     void multipleHitsOnSameShipType() throws Exception {
         IShip boat = ship("Fragata");
 
@@ -156,6 +167,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar um tiro que afunda um navio")
     void sunkShip() throws Exception {
         IShip boat = ship("Fragata");
 
@@ -171,6 +183,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar vários navios afundados do mesmo tipo")
     void multipleSunkShipsOfSameType() throws Exception {
         IShip boat = ship("Fragata");
 
@@ -185,6 +198,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar tiros em navios de tipos diferentes")
     void differentShipTypes() throws Exception {
         IShip frigate = ship("Fragata");
         IShip barge = ship("Barge");
@@ -199,6 +213,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar uma combinação de tiros diferentes")
     void mixedShots() throws Exception {
         IShip boat = ship("Fragata");
 
@@ -217,6 +232,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar múltiplos tiros na água")
     void multipleMissedShots() throws Exception {
         JsonNode data = json(move(
                 result(true, false, null, false),
@@ -227,6 +243,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar uma jogada sem resultados")
     void noResults() throws Exception {
         JsonNode data = json(move(), true);
 
@@ -237,6 +254,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar acertos e navios afundados na mesma jogada")
     void mixedSunkAndHits() throws Exception {
         IShip frigate = ship("Fragata");
         IShip barge = ship("Barge");
@@ -256,6 +274,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Processar múltiplos resultados com verbose desativado")
     void verboseFalseWithMultipleResults() throws Exception {
         IShip boat = ship("Fragata");
 
@@ -271,6 +290,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Apresentar apenas acertos com verbose ativado")
     void verboseWithOnlyHits() throws Exception {
         IShip boat = ship("Fragata");
 
@@ -283,6 +303,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Apresentar apenas navios afundados com verbose ativado")
     void verboseWithOnlySunkShips() throws Exception {
         IShip boat = ship("Fragata");
 
@@ -295,6 +316,7 @@ class MoveTest {
     }
 
     @Test
+    @DisplayName("Apresentar apenas tiros inválidos com verbose ativado")
     void verboseWithInvalidShotsOnly() throws Exception {
         JsonNode data = json(move(
                 result(false, false, null, false)
@@ -304,5 +326,41 @@ class MoveTest {
         assertEquals(Game.NUMBER_SHOTS,
                 data.get("outsideShots").asInt());
     }
+
+    @Test
+    @DisplayName("Verificar a contagem de dois tiros repetidos")
+    void testMultipleRepeatedShots() throws Exception {
+
+        List<IGame.ShotResult> results = List.of(
+                new IGame.ShotResult(true, true, null, false),
+                new IGame.ShotResult(true, true, null, false)
+        );
+
+        Move move = new Move(1, List.of(), results);
+
+        JsonNode json = new ObjectMapper()
+                .readTree(move.processEnemyFire(true));
+
+        assertEquals(2, json.get("repeatedShots").asInt());
+        assertEquals(0, json.get("validShots").asInt());
+    }
+
+    @Test
+    @DisplayName("Verificar um tiro válido e um repetido com verbose ativado")
+    void testOneValidAndOneRepeatedShotVerbose() throws Exception {
+
+        List<IGame.ShotResult> results = List.of(
+                new IGame.ShotResult(true, false, null, false),
+                new IGame.ShotResult(true, true, null, false)
+        );
+
+        Move move = new Move(1, List.of(), results);
+
+        JsonNode json = new ObjectMapper()
+                .readTree(move.processEnemyFire(true));
+
+        assertEquals(1, json.get("validShots").asInt());
+        assertEquals(1, json.get("repeatedShots").asInt());
+        assertEquals(1, json.get("missedShots").asInt());
+    }
 }
-/////
