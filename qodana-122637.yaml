@@ -1,0 +1,14 @@
+# 122637 - Daniel Sequeira
+version: "1.0"
+linter: jetbrains/qodana-jvm-community:2025.3
+projectJDK: "21"
+profile:
+  path: .qodana/profiles/profile-122637.yaml
+failureConditions:
+  severityThresholds:
+    critical: 0
+    high: 0
+    moderate: 0
+    low: 0
+    info: 0
+    any: 10000

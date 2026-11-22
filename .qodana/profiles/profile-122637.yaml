@@ -1,0 +1,10 @@
+# 122537 - Daniel Sequeira
+profile:
+  base:
+    name: empty
+  inspections:
+    - inspection: OverlyComplexClass
+      enabled: true
+      severity: ERROR
+      options:
+        m: 16

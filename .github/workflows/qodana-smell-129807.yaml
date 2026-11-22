@@ -1,5 +1,4 @@
-
-# 129807 - Long Parameter List
+# 129807 - Martim Fonseca - Long Parameter List
 name: Qodana smell gate 129807
 
 on:
@@ -15,10 +14,12 @@ permissions:
 
 jobs:
   qodana:
+    name: qodana-129807
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - uses: JetBrains/qodana-action@v2026.2
