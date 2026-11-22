@@ -66,10 +66,14 @@ public class Scoreboard {
 
         System.out.println("\n=================== SCOREBOARD ===================");
         int rank = 1;
+        printScores(rank);
+        System.out.println("=================================================\n");
+    }
+
+    private void printScores(int rank) {
         for (ScoreEntry entry : scores) {
             System.out.println(rank + ". " + entry);
             rank++;
         }
-        System.out.println("=================================================\n");
     }
 }
