@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-import static org.junit.jupiter.api.Assertions.*;
 /**
  * IGameTest
  *
@@ -89,8 +88,8 @@ class IGameTest {
             }
 
             @Override
-            public ShotResult fireSingleShot(IPosition pos, boolean isRepeated) {
-                return new ShotResult(true, isRepeated, null, false);
+            public ShotResult fireSingleShot(SingleShotParams singleShotParams) {
+                return new ShotResult(true, singleShotParams.isRepeated(), null, false);
             }
 
             @Override
@@ -155,7 +154,7 @@ class IGameTest {
         assertEquals("Hit", game.readEnemyFire(new Scanner("Hit")));
         assertEquals("", game.readEnemyFire(new Scanner("")));
         assertDoesNotThrow(() -> game.fireShots(Collections.emptyList()));
-        assertTrue(game.fireSingleShot(new Position(1, 1), false).valid());
+        assertTrue(game.fireSingleShot(new SingleShotParams(new Position(1, 1), false)).valid());
         assertNull(game.getMyFleet());
         assertTrue(game.getAlienMoves().isEmpty());
         assertNull(game.getAlienFleet());

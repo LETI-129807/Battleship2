@@ -356,7 +356,7 @@ public class Game implements IGame
 
 		List<IPosition> alreadyShot = new ArrayList<IPosition>();
 		for (IPosition pos : shots) {
-			shotResults.add(fireSingleShot(pos, alreadyShot.contains(pos)));
+			shotResults.add(fireSingleShot(new SingleShotParams(pos, alreadyShot.contains(pos))));
 			alreadyShot.add(pos);
 		}
 
@@ -376,31 +376,29 @@ public class Game implements IGame
 	 * repeated shots, hits, misses, and sinking a ship. The method updates the necessary counters
 	 * for invalid shots, repeated shots, hits, and sunk ships.
 	 *
-	 * @param pos the position to fire the shot at; must be valid and within the game board boundaries.
-	 * @param isRepeated true if the shot is marked as a repeat attempt, false otherwise.
-	 * @return a ShotResult object containing the result of the shot, including whether the shot was
-	 *         valid, repeated, a hit, and whether a ship was sunk.
+	 * @param singleShotParams@return a ShotResult object containing the result of the shot, including whether the shot was
+	 *                                valid, repeated, a hit, and whether a ship was sunk.
 	 */
-	public ShotResult fireSingleShot(IPosition pos, boolean isRepeated) {
+	public ShotResult fireSingleShot(SingleShotParams singleShotParams) {
 
-		assert pos != null;
+		assert singleShotParams.pos() != null;
 
-		if (!pos.isInside()) {
+		if (!singleShotParams.pos().isInside()) {
 			countInvalidShots++;
 			return new ShotResult(false, false, null, false);
 		}
 
-		if (isRepeated || repeatedShot(pos)) {
+		if (singleShotParams.isRepeated() || repeatedShot(singleShotParams.pos())) {
 			countRepeatedShots++;
 			return new ShotResult(true, true, null, false);
 		}
 
-		IShip ship = myFleet.shipAt(pos);
+		IShip ship = myFleet.shipAt(singleShotParams.pos());
 		if (ship == null)
 			return new ShotResult(true, false, null, false);
 		else
 		{
-			ship.shoot(pos);
+			ship.shoot(singleShotParams.pos());
 			countHits++;
 			if (!ship.stillFloating()) {
 				countSinks++;

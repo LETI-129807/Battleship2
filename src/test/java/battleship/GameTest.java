@@ -53,15 +53,15 @@ public class GameTest {
 	@Test
 	void fire2() {
 		Position invalidPosition = new Position(-1, 5);
-		game.fireSingleShot(invalidPosition, false);
+		game.fireSingleShot(new SingleShotParams(invalidPosition, false));
 		assertEquals(1, game.getInvalidShots(), "Invalid shots counter should increase for an invalid shot.");
 	}
 
 	@Test
 	void fire3() {
 		Position position = new Position(2, 3);
-		game.fireSingleShot(position, false);
-		game.fireSingleShot(position, true);
+		game.fireSingleShot(new SingleShotParams(position, false));
+		game.fireSingleShot(new SingleShotParams(position, true));
 		assertEquals(1, game.getRepeatedShots(), "Repeated shots counter should increase for a repeated shot.");
 	}
 
