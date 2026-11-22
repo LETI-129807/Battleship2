@@ -96,54 +96,7 @@ public class Tasks {
                     break;
 
                 case SIMULA:
-                    if (game != null) {
-
-                        while (game.getRemainingShips() > 0) {
-
-                            // Cronometro de cada jogada simulada
-                            StopWatch watch = StopWatch.createStarted();
-
-                            game.randomEnemyFire();
-                            myFleet.printStatus();
-                            game.printMyBoard(true, false);
-
-                            watch.stop();
-
-                            System.out.println(
-                                    "Tempo de processamento da jogada: "
-                                    + watch.getTime()
-                                    + " ms"
-                            );
-
-                            try {
-                                Thread.sleep(3000);
-                            } catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                                break;
-                            }
-                        }
-
-                        if (game.getRemainingShips() == 0) {
-
-                            game.over();
-
-                            scoreboardManager.addScore(
-                                    "Simulação",
-                                    game.getAlienMoves().size()
-                            );
-
-                            scoreboardManager.displayScoreboard();
-
-                            System.out.println(
-                                    "Simulacao terminada. Pode escrever exportpdf para guardar o historico."
-                            );
-                        }
-
-                    } else {
-                        System.out.println(
-                                "Primeiro tem de criar uma frota."
-                        );
-                    }
+                    handleSimula(game, myFleet);
                     break;
 
                 case TIROS:
@@ -170,34 +123,7 @@ public class Tasks {
 
                 // Funcionalidade Exportar PDF
                 case EXPORTPDF:
-                    if (game != null) {
-
-                        String fileName = "historico_"
-                                + LocalDateTime.now().format(PDF_DATE_FORMAT)
-                                + ".pdf";
-
-                        try {
-
-                            PdfExporter.export(game, fileName);
-
-                            System.out.println(
-                                    "Historico exportado para PDF: "
-                                    + fileName
-                            );
-
-                        } catch (IOException e) {
-
-                            System.out.println(
-                                    "Erro ao exportar PDF: "
-                                    + e.getMessage()
-                            );
-                        }
-
-                    } else {
-                        System.out.println(
-                                "Nao existe nenhum jogo para exportar."
-                        );
-                    }
+                    handleExportPdf(game);
                     break;
 
                 case AJUDA:
@@ -216,6 +142,90 @@ public class Tasks {
         }
 
         System.out.println(GOODBYE_MESSAGE);
+    }
+
+    private static void handleExportPdf(IGame game) {
+        if (game != null) {
+
+            String fileName = "historico_"
+                    + LocalDateTime.now().format(PDF_DATE_FORMAT)
+                    + ".pdf";
+
+            try {
+
+                PdfExporter.export(game, fileName);
+
+                System.out.println(
+                        "Historico exportado para PDF: "
+                        + fileName
+                );
+
+            } catch (IOException e) {
+
+                System.out.println(
+                        "Erro ao exportar PDF: "
+                        + e.getMessage()
+                );
+            }
+
+        } else {
+            System.out.println(
+                    "Nao existe nenhum jogo para exportar."
+            );
+        }
+        return;
+    }
+
+    private static void handleSimula(IGame game, IFleet myFleet) {
+        if (game != null) {
+
+            while (game.getRemainingShips() > 0) {
+
+                // Cronometro de cada jogada simulada
+                StopWatch watch = StopWatch.createStarted();
+
+                game.randomEnemyFire();
+                myFleet.printStatus();
+                game.printMyBoard(true, false);
+
+                watch.stop();
+
+                System.out.println(
+                        "Tempo de processamento da jogada: "
+                        + watch.getTime()
+                        + " ms"
+                );
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+
+            if (game.getRemainingShips() == 0) {
+
+                game.over();
+
+                scoreboardManager.addScore(
+                        "Simulação",
+                        game.getAlienMoves().size()
+                );
+
+                scoreboardManager.displayScoreboard();
+
+                System.out.println(
+                        "Simulacao terminada. Pode escrever exportpdf para guardar o historico."
+                );
+            }
+
+        } else {
+            System.out.println(
+                    "Primeiro tem de criar uma frota."
+            );
+        }
+        return;
     }
 
     private static void handleRajada(IGame game, Scanner in, IFleet myFleet, StopWatch turnWatch) {
