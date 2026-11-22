@@ -13,6 +13,7 @@ import java.util.List;
 
 public class Scoreboard {
     private static final String FILE_PATH = "data/scoreboard.json";
+    public static final String DATA = "data";
     private final Gson gson;
     private List<ScoreEntry> scores;
 
@@ -37,7 +38,7 @@ public class Scoreboard {
     }
 
     public void addScore(String playerName, int totalShots) {
-        File dir = new File("data");
+        File dir = new File(DATA);
         if (!dir.exists()) {
             dir.mkdirs();
         }
