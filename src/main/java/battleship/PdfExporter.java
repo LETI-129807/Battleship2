@@ -54,9 +54,9 @@ public class PdfExporter {
                 exporter.createPage();
 
                 exporter.writeLine(
-                        "BATTLESHIP - RELATORIO DE JOGADAS", true
+                        "BATTLESHIP - RELATORIO DE JOGADAS", true, true ? 13 : 11
                 );
-                exporter.writeLine("", false);
+                exporter.writeLine("", false, false ? 13 : 11);
 
                 List<IMove> moves = game.getAlienMoves();
 
@@ -67,33 +67,33 @@ public class PdfExporter {
                 }
 
                 // Estatisticas
-                exporter.writeLine("RESUMO DA PARTIDA", true);
+                exporter.writeLine("RESUMO DA PARTIDA", true, true ? 13 : 11);
                 exporter.writeLine(
-                        "Total de jogadas: " + moves.size(), false
+                        "Total de jogadas: " + moves.size(), false, false ? 13 : 11
                 );
                 exporter.writeLine(
-                        "Acertos: " + game.getHits(), false
+                        "Acertos: " + game.getHits(), false, false ? 13 : 11
                 );
                 exporter.writeLine(
-                        "Tiros repetidos: " + game.getRepeatedShots(), false
+                        "Tiros repetidos: " + game.getRepeatedShots(), false, false ? 13 : 11
                 );
                 exporter.writeLine(
-                        "Tiros invalidos: " + game.getInvalidShots(), false
+                        "Tiros invalidos: " + game.getInvalidShots(), false, false ? 13 : 11
                 );
                 exporter.writeLine(
-                        "Navios afundados: " + game.getSunkShips(), false
+                        "Navios afundados: " + game.getSunkShips(), false, false ? 13 : 11
                 );
                 exporter.writeLine(
-                        "Navios restantes: " + game.getRemainingShips(), false
+                        "Navios restantes: " + game.getRemainingShips(), false, false ? 13 : 11
                 );
 
-                exporter.writeLine("", false);
-                exporter.writeLine("HISTORICO DE TIROS", true);
-                exporter.writeLine("", false);
+                exporter.writeLine("", false, false ? 13 : 11);
+                exporter.writeLine("HISTORICO DE TIROS", true, true ? 13 : 11);
+                exporter.writeLine("", false, false ? 13 : 11);
 
                 if (moves.isEmpty()) {
                     exporter.writeLine(
-                            "Ainda nao existem jogadas registadas.", false
+                            "Ainda nao existem jogadas registadas.", false, false ? 13 : 11
                     );
                 }
 
@@ -106,7 +106,7 @@ public class PdfExporter {
                     }
 
                     exporter.writeLine(
-                            "Jogada numero " + move.getNumber(), true
+                            "Jogada numero " + move.getNumber(), true, true ? 13 : 11
                     );
 
                     List<IPosition> shots = move.getShots();
@@ -115,9 +115,9 @@ public class PdfExporter {
 
                     if (shots == null || shots.isEmpty()) {
                         exporter.writeLine(
-                                "Sem tiros registados nesta jogada.", false
+                                "Sem tiros registados nesta jogada.", false, false ? 13 : 11
                         );
-                        exporter.writeLine("", false);
+                        exporter.writeLine("", false, false ? 13 : 11);
                         continue;
                     }
 
@@ -144,15 +144,15 @@ public class PdfExporter {
                                 "Tiro " + (i + 1)
                                         + " | " + positionText
                                         + " | " + resultText,
-                                false
+                                false, false ? 13 : 11
                         );
                     }
 
-                    exporter.writeLine("", false);
+                    exporter.writeLine("", false, false ? 13 : 11);
                 }
 
                 exporter.writeLine(
-                        "Total de tiros registados: " + totalShots, true
+                        "Total de tiros registados: " + totalShots, true, true ? 13 : 11
                 );
 
             } finally {
@@ -206,7 +206,7 @@ public class PdfExporter {
     /**
      * Escreve uma linha no PDF.
      */
-    private void writeLine(String text, boolean bold)
+    private void writeLine(String text, boolean bold, int fontSize)
             throws IOException {
 
         if (currentY < MARGIN + LINE_HEIGHT) {
@@ -220,7 +220,7 @@ public class PdfExporter {
         );
 
         contentStream.beginText();
-        contentStream.setFont(font, bold ? 13 : 11);
+        contentStream.setFont(font, fontSize);
         contentStream.newLineAtOffset(MARGIN, currentY);
         contentStream.showText(text);
         contentStream.endText();
