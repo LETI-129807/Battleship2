@@ -93,108 +93,11 @@ public class Tasks {
                     break;
 
                 case RAJADA:
-                    if (game != null) {
-
-                        try {
-                            game.readEnemyFire(in);
-                            myFleet.printStatus();
-                            game.printMyBoard(true, false);
-
-                            // Cronometro da jogada
-                            if (turnWatch.isStarted()) {
-                                turnWatch.stop();
-
-                                System.out.println(
-                                        "Tempo gasto nesta jogada: "
-                                        + turnWatch.getTime(TimeUnit.SECONDS)
-                                        + " segundos"
-                                );
-                            }
-
-                            turnWatch.reset();
-
-                            if (game.getRemainingShips() > 0) {
-                                turnWatch.start();
-                            }
-
-                            if (game.getRemainingShips() == 0) {
-
-                                game.over();
-
-                                scoreboardManager.addScore(
-                                        "Jogador",
-                                        game.getMyMoves().size()
-                                );
-
-                                scoreboardManager.displayScoreboard();
-
-                                System.out.println(
-                                        "Jogo terminado. Pode escrever exportpdf para guardar o historico."
-                                );
-                            }
-
-                        } catch (IllegalArgumentException e) {
-                            System.out.println(
-                                    "Erro: " + e.getMessage()
-                            );
-                        }
-
-                    } else {
-                        System.out.println(
-                                "Primeiro tem de criar uma frota."
-                        );
-                    }
+                    handleRajada(game, in, myFleet, turnWatch);
                     break;
 
                 case SIMULA:
-                    if (game != null) {
-
-                        while (game.getRemainingShips() > 0) {
-
-                            // Cronometro de cada jogada simulada
-                            StopWatch watch = StopWatch.createStarted();
-
-                            game.randomEnemyFire();
-                            myFleet.printStatus();
-                            game.printMyBoard(true, false);
-
-                            watch.stop();
-
-                            System.out.println(
-                                    "Tempo de processamento da jogada: "
-                                    + watch.getTime()
-                                    + " ms"
-                            );
-
-                            try {
-                                Thread.sleep(3000);
-                            } catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                                break;
-                            }
-                        }
-
-                        if (game.getRemainingShips() == 0) {
-
-                            game.over();
-
-                            scoreboardManager.addScore(
-                                    "Simulação",
-                                    game.getAlienMoves().size()
-                            );
-
-                            scoreboardManager.displayScoreboard();
-
-                            System.out.println(
-                                    "Simulacao terminada. Pode escrever exportpdf para guardar o historico."
-                            );
-                        }
-
-                    } else {
-                        System.out.println(
-                                "Primeiro tem de criar uma frota."
-                        );
-                    }
+                    handleSimula(game, myFleet);
                     break;
 
                 case TIROS:
@@ -221,34 +124,7 @@ public class Tasks {
 
                 // Funcionalidade Exportar PDF
                 case EXPORTPDF:
-                    if (game != null) {
-
-                        String fileName = "historico_"
-                                + LocalDateTime.now().format(PDF_DATE_FORMAT)
-                                + ".pdf";
-
-                        try {
-
-                            PdfExporter.export(game, fileName);
-
-                            System.out.println(
-                                    "Historico exportado para PDF: "
-                                    + fileName
-                            );
-
-                        } catch (IOException e) {
-
-                            System.out.println(
-                                    "Erro ao exportar PDF: "
-                                    + e.getMessage()
-                            );
-                        }
-
-                    } else {
-                        System.out.println(
-                                "Nao existe nenhum jogo para exportar."
-                        );
-                    }
+                    handleExportPdf(game);
                     break;
 
                 case AJUDA:
@@ -267,6 +143,145 @@ public class Tasks {
         }
 
         System.out.println(GOODBYE_MESSAGE);
+    }
+
+    private static void handleExportPdf(IGame game) {
+        if (game != null) {
+
+            String fileName = "historico_"
+                    + LocalDateTime.now().format(PDF_DATE_FORMAT)
+                    + ".pdf";
+
+            try {
+
+                PdfExporter.export(game, fileName);
+
+                System.out.println(
+                        "Historico exportado para PDF: "
+                        + fileName
+                );
+
+            } catch (IOException e) {
+
+                System.out.println(
+                        "Erro ao exportar PDF: "
+                        + e.getMessage()
+                );
+            }
+
+        } else {
+            System.out.println(
+                    "Nao existe nenhum jogo para exportar."
+            );
+        }
+        return;
+    }
+
+    private static void handleSimula(IGame game, IFleet myFleet) {
+        if (game != null) {
+
+            while (game.getRemainingShips() > 0) {
+
+                // Cronometro de cada jogada simulada
+                StopWatch watch = StopWatch.createStarted();
+
+                game.randomEnemyFire();
+                myFleet.printStatus();
+                game.printMyBoard(true, false);
+
+                watch.stop();
+
+                System.out.println(
+                        "Tempo de processamento da jogada: "
+                        + watch.getTime()
+                        + " ms"
+                );
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+
+            if (game.getRemainingShips() == 0) {
+
+                game.over();
+
+                scoreboardManager.addScore(
+                        "Simulação",
+                        game.getAlienMoves().size()
+                );
+
+                scoreboardManager.displayScoreboard();
+
+                System.out.println(
+                        "Simulacao terminada. Pode escrever exportpdf para guardar o historico."
+                );
+            }
+
+        } else {
+            System.out.println(
+                    "Primeiro tem de criar uma frota."
+            );
+        }
+        return;
+    }
+
+    private static void handleRajada(IGame game, Scanner in, IFleet myFleet, StopWatch turnWatch) {
+        if (game != null) {
+
+            try {
+                game.readEnemyFire(in);
+                myFleet.printStatus();
+                game.printMyBoard(true, false);
+
+                // Cronometro da jogada
+                if (turnWatch.isStarted()) {
+                    turnWatch.stop();
+
+                    System.out.println(
+                            "Tempo gasto nesta jogada: "
+                            + turnWatch.getTime(TimeUnit.SECONDS)
+                            + " segundos"
+                    );
+                }
+
+                turnWatch.reset();
+
+                if (game.getRemainingShips() > 0) {
+                    turnWatch.start();
+                }
+
+                if (game.getRemainingShips() == 0) {
+
+                    game.over();
+
+                    scoreboardManager.addScore(
+                            "Jogador",
+                            game.getMyMoves().size()
+                    );
+
+                    scoreboardManager.displayScoreboard();
+
+                    System.out.println(
+                            "Jogo terminado. Pode escrever exportpdf para guardar o historico."
+                    );
+                }
+
+            } catch (IllegalArgumentException e) {
+                System.out.println(
+                        "Erro: " + e.getMessage()
+                );
+            }
+
+        } else {
+            System.out.println(
+                    "Primeiro tem de criar uma frota."
+            );
+        }
+        return;
     }
 
     /**
@@ -309,24 +324,27 @@ public class Tasks {
 
             IShip s = readShip(in);
 
-            if (s != null) {
-
-                boolean success = fleet.addShip(s);
-
-                if (success) {
-                    i++;
-                } else {
-                    LOGGER.info(
-                            "Falha na criacao de {} {} {}",
-                            s.getCategory(),
-                            s.getBearing(),
-                            s.getPosition()
-                    );
-                }
-
-            } else {
+            // Guard Clause: Se o navio for nulo, avisa e salta para a próxima iteração
+            if (s == null) {
                 LOGGER.info("Navio desconhecido!");
+                continue;
             }
+
+            boolean success = fleet.addShip(s);
+
+            // Guard Clause: Se falhar a adição, avisa e salta para a próxima iteração
+            if (!success) {
+                LOGGER.info(
+                        "Falha na criacao de {} {} {}",
+                        s.getCategory(),
+                        s.getBearing(),
+                        s.getPosition()
+                );
+                continue;
+            }
+
+            // Se chegou aqui, o navio foi adicionado com sucesso
+            i++;
         }
 
         LOGGER.info("{} navios adicionados com sucesso!", i);
@@ -369,12 +387,6 @@ public class Tasks {
         return new Position(in.nextInt(), in.nextInt());
     }
 
-    /**
-     * Le uma posicao no formato A3 ou A 3.
-     *
-     * @param in Scanner de entrada
-     * @return Posicao lida
-     */
     public static IPosition readClassicPosition(@NotNull Scanner in) {
 
         if (!in.hasNext()) {
@@ -397,28 +409,29 @@ public class Tasks {
         input = input.toUpperCase();
 
         if (input.matches("[A-Z]\\d+")) {
-
-            char column = input.charAt(0);
-            int row = Integer.parseInt(input.substring(1));
-
-            return new Position(column, row);
-
+            return parseCompactPosition(input);
         } else if (
                 part2 != null
                         && part1.toUpperCase().matches("[A-Z]")
                         && part2.matches("\\d+")
         ) {
-
-            char column = part1.toUpperCase().charAt(0);
-            int row = Integer.parseInt(part2);
-
-            return new Position(column, row);
-
+            return parseSpacedPosition(part1, part2);
         } else {
-
             throw new IllegalArgumentException(
                     "Formato inválido. Use 'A3', 'A 3' ou similar."
             );
         }
+    }
+
+    private static IPosition parseCompactPosition(String input) {
+        char column = input.charAt(0);
+        int row = Integer.parseInt(input.substring(1));
+        return new Position(column, row);
+    }
+
+    private static IPosition parseSpacedPosition(String part1, String part2) {
+        char column = part1.toUpperCase().charAt(0);
+        int row = Integer.parseInt(part2);
+        return new Position(column, row);
     }
 }
