@@ -1,0 +1,226 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Scoreboard</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">battleship</a>
+</div>
+
+<h1>Coverage Summary for Class: Scoreboard (battleship)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Scoreboard</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.5%
+  </span>
+  <span class="absValue">
+    (29/31)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Scoreboard$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.8%
+  </span>
+  <span class="absValue">
+    (30/32)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package battleship;
+&nbsp;
+&nbsp;import com.google.gson.Gson;
+&nbsp;import com.google.gson.GsonBuilder;
+&nbsp;import com.google.gson.reflect.TypeToken;
+&nbsp;
+&nbsp;import java.io.*;
+&nbsp;import java.lang.reflect.Type;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public class Scoreboard {
+&nbsp;    private static final String FILE_PATH = &quot;data/scoreboard.json&quot;;
+&nbsp;    private final Gson gson;
+&nbsp;    private List&lt;ScoreEntry&gt; scores;
+&nbsp;
+<b class="fc">&nbsp;    public Scoreboard() {</b>
+<b class="fc">&nbsp;        this.gson = new GsonBuilder().setPrettyPrinting().create();</b>
+<b class="fc">&nbsp;        this.scores = loadScores();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private List&lt;ScoreEntry&gt; loadScores() {
+<b class="fc">&nbsp;        File file = new File(FILE_PATH);</b>
+<b class="fc">&nbsp;        if (!file.exists()) {</b>
+<b class="fc">&nbsp;            return new ArrayList&lt;&gt;();</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        try (Reader reader = new FileReader(file)) {</b>
+<b class="fc">&nbsp;            Type listType = new TypeToken&lt;ArrayList&lt;ScoreEntry&gt;&gt;() {}.getType();</b>
+<b class="fc">&nbsp;            List&lt;ScoreEntry&gt; loaded = gson.fromJson(reader, listType);</b>
+<b class="fc">&nbsp;            return (loaded != null) ? loaded : new ArrayList&lt;&gt;();</b>
+&nbsp;        } catch (IOException e) {
+<b class="fc">&nbsp;            System.err.println(&quot;Erro ao carregar o Scoreboard: &quot; + e.getMessage());</b>
+<b class="fc">&nbsp;            return new ArrayList&lt;&gt;();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addScore(String playerName, int totalShots) {
+<b class="fc">&nbsp;        File dir = new File(&quot;data&quot;);</b>
+<b class="pc">&nbsp;        if (!dir.exists()) {</b>
+<b class="nc">&nbsp;            dir.mkdirs();</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        scores.add(new ScoreEntry(playerName, totalShots, LocalDate.now().toString()));</b>
+<b class="fc">&nbsp;        saveScores();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void saveScores() {
+<b class="fc">&nbsp;        try (Writer writer = new FileWriter(FILE_PATH)) {</b>
+<b class="fc">&nbsp;            gson.toJson(scores, writer);</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            System.err.println(&quot;Erro ao guardar o Scoreboard: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public void displayScoreboard() {
+<b class="fc">&nbsp;        if (scores.isEmpty()) {</b>
+<b class="fc">&nbsp;            System.out.println(&quot;\n=================== SCOREBOARD ===================&quot;);</b>
+<b class="fc">&nbsp;            System.out.println(&quot;Nenhum jogo registado ainda.&quot;);</b>
+<b class="fc">&nbsp;            System.out.println(&quot;=================================================\n&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        scores.sort(Comparator.comparingInt(ScoreEntry::getTotalShots));</b>
+&nbsp;
+<b class="fc">&nbsp;        System.out.println(&quot;\n=================== SCOREBOARD ===================&quot;);</b>
+<b class="fc">&nbsp;        int rank = 1;</b>
+<b class="fc">&nbsp;        for (ScoreEntry entry : scores) {</b>
+<b class="fc">&nbsp;            System.out.println(rank + &quot;. &quot; + entry);</b>
+<b class="fc">&nbsp;            rank++;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        System.out.println(&quot;=================================================\n&quot;);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-22 16:26</div>
+</div>
+</body>
+</html>
