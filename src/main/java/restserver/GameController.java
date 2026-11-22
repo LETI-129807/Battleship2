@@ -159,7 +159,7 @@ public class GameController {
 
 		for (IPosition pos : positions) {
 			boolean repeatedInTurn = alreadyThisTurn.contains(pos);
-			IGame.ShotResult sr = game.fireSingleShot(pos, repeatedInTurn);
+			IGame.ShotResult sr = game.fireSingleShot(new SingleShotParams(pos, repeatedInTurn));
 			alreadyThisTurn.add(pos);
 
 			ShotResult dto  = new ShotResult();

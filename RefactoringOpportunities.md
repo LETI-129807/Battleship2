@@ -19,3 +19,10 @@
 | Move::processEnemyFire() | Duplicated Code | Introduce Variable | 122637 |
 | ScoreEntry::playerName | Data Class | Encapsulate Field | 122637 |
 | Scoreboard::saveScores() | Magic Strings | Introduce Parameter | 122637 |
+| Tasks::menuHelp() | Magic Strings | Introduce Constant | 129789 |
+| Tasks::readShip() | Message Chains (Law of Demeter) | Introduce Variable | 129789 |
+| Tasks::readPosition() | Unnecessary Local Variable | Inline Variable | 129789 |
+| Game::printBoard() | Long Method | Extract Method | 129789 |
+| Game::jsonShots() | Magic Strings | Introduce Field | 129789 |
+| Game::fireSingleShot() | Primitive Obsession / Long Parameter List | Introduce Parameter Object | 129789 |
+| Game::getRemainingShips() | Redundant Local Variable | Inline Method | 129789 |
