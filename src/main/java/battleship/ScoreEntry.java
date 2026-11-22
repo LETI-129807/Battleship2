@@ -6,7 +6,7 @@ public class ScoreEntry {
     private String date;
 
     public ScoreEntry(String playerName, int totalShots, String date) {
-        this.playerName = playerName;
+        this.setPlayerName(playerName);
         this.totalShots = totalShots;
         this.date = date;
     }
@@ -25,7 +25,7 @@ public class ScoreEntry {
 
     @Override
     public String toString() {
-        String formattedEntry = String.format("Jogador: %-15s | Tiros Efetuados: %-3d | Data: %s", playerName, totalShots, date);
+        String formattedEntry = String.format("Jogador: %-15s | Tiros Efetuados: %3d | Data: %s", getPlayerName(), totalShots, date);
         return formattedEntry;
     }
 }

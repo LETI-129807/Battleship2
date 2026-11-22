@@ -9,6 +9,9 @@ import java.util.*;
 
 public class Game implements IGame
 {
+
+	private static ObjectMapper OBJECT_MAPPER;
+
 	/**
 	 * Prints the game board by representing the positions of ships, adjacent tiles,
 	 * shots, and other game elements onto the console. The method also optionally
@@ -41,12 +44,16 @@ public class Game implements IGame
 
 		printBoardFrame(map);
 
+		printLegend(showLegend);
+		System.out.println();
+	}
+
+	private static void printLegend(boolean showLegend) {
 		if (showLegend) {
 			System.out.println("          LEGENDA");
 			System.out.println("'" + SHIP_MARKER + "'->navio, '" + SHIP_ADJACENT_MARKER + "'->adjacente a navio, '" + EMPTY_MARKER + "'->água");
 			System.out.println("'" + SHOT_SHIP_MARKER + "'->Tiro certeiro, '" + SHOT_WATER_MARKER + "'->Tiro na água");
 		}
-		System.out.println();
 	}
 
 	private static void printShips(IFleet fleet, char[][] map) {
@@ -119,7 +126,8 @@ public class Game implements IGame
 		assert shots != null;
 
 		// Serializar os tiros gerados em JSON usando a biblioteca Jackson
-		ObjectMapper objectMapper = new ObjectMapper();
+		OBJECT_MAPPER = new ObjectMapper();
+		ObjectMapper objectMapper = OBJECT_MAPPER;
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
 		// 1. Create a simplified list containing only the desired data
@@ -348,7 +356,7 @@ public class Game implements IGame
 
 		List<IPosition> alreadyShot = new ArrayList<IPosition>();
 		for (IPosition pos : shots) {
-			shotResults.add(fireSingleShot(pos, alreadyShot.contains(pos)));
+			shotResults.add(fireSingleShot(new SingleShotParams(pos, alreadyShot.contains(pos))));
 			alreadyShot.add(pos);
 		}
 
@@ -368,31 +376,29 @@ public class Game implements IGame
 	 * repeated shots, hits, misses, and sinking a ship. The method updates the necessary counters
 	 * for invalid shots, repeated shots, hits, and sunk ships.
 	 *
-	 * @param pos the position to fire the shot at; must be valid and within the game board boundaries.
-	 * @param isRepeated true if the shot is marked as a repeat attempt, false otherwise.
-	 * @return a ShotResult object containing the result of the shot, including whether the shot was
-	 *         valid, repeated, a hit, and whether a ship was sunk.
+	 * @param singleShotParams@return a ShotResult object containing the result of the shot, including whether the shot was
+	 *                                valid, repeated, a hit, and whether a ship was sunk.
 	 */
-	public ShotResult fireSingleShot(IPosition pos, boolean isRepeated) {
+	public ShotResult fireSingleShot(SingleShotParams singleShotParams) {
 
-		assert pos != null;
+		assert singleShotParams.pos() != null;
 
-		if (!pos.isInside()) {
+		if (!singleShotParams.pos().isInside()) {
 			countInvalidShots++;
 			return new ShotResult(false, false, null, false);
 		}
 
-		if (isRepeated || repeatedShot(pos)) {
+		if (singleShotParams.isRepeated() || repeatedShot(singleShotParams.pos())) {
 			countRepeatedShots++;
 			return new ShotResult(true, true, null, false);
 		}
 
-		IShip ship = myFleet.shipAt(pos);
+		IShip ship = myFleet.shipAt(singleShotParams.pos());
 		if (ship == null)
 			return new ShotResult(true, false, null, false);
 		else
 		{
-			ship.shoot(pos);
+			ship.shoot(singleShotParams.pos());
 			countHits++;
 			if (!ship.stillFloating()) {
 				countSinks++;
@@ -428,8 +434,7 @@ public class Game implements IGame
 	@Override
 	public int getRemainingShips()
 	{
-		List<IShip> floatingShips = myFleet.getFloatingShips();
-		return floatingShips.size();
+        return myFleet.getFloatingShips().size();
 	}
 
 	public boolean repeatedShot(IPosition pos)

@@ -40,6 +40,7 @@ public class Tasks {
             DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS");
 
     private static final Scoreboard scoreboardManager = new Scoreboard();
+    public static final String MENU_SEPARATOR = "===============================================================";
 
     /**
      * Menu principal do jogo.
@@ -303,7 +304,7 @@ public class Tasks {
         System.out.println("- " + EXPORTPDF + ": Exporta o historico de jogadas para PDF.");
         System.out.println("- " + DESISTIR + ": Encerra o jogo.");
 
-        System.out.println("===============================================================");
+        System.out.println(MENU_SEPARATOR);
     }
 
     /**
@@ -365,7 +366,8 @@ public class Tasks {
 
         Position pos = readPosition(in);
 
-        char c = in.next().charAt(0);
+        String bearingInput = in.next();
+        char c = bearingInput.charAt(0);
 
         Compass bearing = Compass.charToCompass(c);
 
@@ -382,10 +384,7 @@ public class Tasks {
 
         assert in != null;
 
-        int row = in.nextInt();
-        int column = in.nextInt();
-
-        return new Position(row, column);
+        return new Position(in.nextInt(), in.nextInt());
     }
 
     public static IPosition readClassicPosition(@NotNull Scanner in) {

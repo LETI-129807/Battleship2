@@ -39,12 +39,10 @@ public interface IGame
 	 * Fires a single shot at the specified position and indicates whether the shot is valid, repeated,
 	 * and if it hit or sank a ship.
 	 *
-	 * @param pos the position to fire the shot at, represented as an instance of {@code IPosition}
-	 * @param isRepeated a boolean indicating if the shot is a repeated attempt at the given position
-	 * @return a {@code ShotResult} containing details such as the validity of the shot, whether it was repeated,
-	 *         the ship (if any) affected, and whether the ship was sunk
+	 * @param singleShotParams@return a {@code ShotResult} containing details such as the validity of the shot, whether it was repeated,
+	 *                                the ship (if any) affected, and whether the ship was sunk
 	 */
-	ShotResult fireSingleShot(IPosition pos, boolean isRepeated);
+	ShotResult fireSingleShot(SingleShotParams singleShotParams);
 
 	/**
 	 * Gets my fleet.
