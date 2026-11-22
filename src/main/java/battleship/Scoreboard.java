@@ -28,8 +28,7 @@ public class Scoreboard {
         }
 
         try (Reader reader = new FileReader(file)) {
-            Type listType = new TypeToken<ArrayList<ScoreEntry>>() {}.getType();
-            List<ScoreEntry> loaded = gson.fromJson(reader, listType);
+            List<ScoreEntry> loaded = gson.fromJson(reader, new TypeToken<ArrayList<ScoreEntry>>() {}.getType());
             return (loaded != null) ? loaded : new ArrayList<>();
         } catch (IOException e) {
             System.err.println("Erro ao carregar o Scoreboard: " + e.getMessage());
