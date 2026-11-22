@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -44,11 +43,11 @@ public class Scoreboard {
         }
 
         scores.add(new ScoreEntry(playerName, totalShots, LocalDate.now().toString()));
-        saveScores();
+        saveScores(FILE_PATH);
     }
 
-    private void saveScores() {
-        try (Writer writer = new FileWriter(FILE_PATH)) {
+    private void saveScores(String filePath) {
+        try (Writer writer = new FileWriter(filePath)) {
             gson.toJson(scores, writer);
         } catch (IOException e) {
             System.err.println("Erro ao guardar o Scoreboard: " + e.getMessage());
