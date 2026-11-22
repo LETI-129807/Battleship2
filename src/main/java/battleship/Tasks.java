@@ -92,57 +92,7 @@ public class Tasks {
                     break;
 
                 case RAJADA:
-                    if (game != null) {
-
-                        try {
-                            game.readEnemyFire(in);
-                            myFleet.printStatus();
-                            game.printMyBoard(true, false);
-
-                            // Cronometro da jogada
-                            if (turnWatch.isStarted()) {
-                                turnWatch.stop();
-
-                                System.out.println(
-                                        "Tempo gasto nesta jogada: "
-                                        + turnWatch.getTime(TimeUnit.SECONDS)
-                                        + " segundos"
-                                );
-                            }
-
-                            turnWatch.reset();
-
-                            if (game.getRemainingShips() > 0) {
-                                turnWatch.start();
-                            }
-
-                            if (game.getRemainingShips() == 0) {
-
-                                game.over();
-
-                                scoreboardManager.addScore(
-                                        "Jogador",
-                                        game.getMyMoves().size()
-                                );
-
-                                scoreboardManager.displayScoreboard();
-
-                                System.out.println(
-                                        "Jogo terminado. Pode escrever exportpdf para guardar o historico."
-                                );
-                            }
-
-                        } catch (IllegalArgumentException e) {
-                            System.out.println(
-                                    "Erro: " + e.getMessage()
-                            );
-                        }
-
-                    } else {
-                        System.out.println(
-                                "Primeiro tem de criar uma frota."
-                        );
-                    }
+                    handleRajada(game, in, myFleet, turnWatch);
                     break;
 
                 case SIMULA:
@@ -266,6 +216,61 @@ public class Tasks {
         }
 
         System.out.println(GOODBYE_MESSAGE);
+    }
+
+    private static void handleRajada(IGame game, Scanner in, IFleet myFleet, StopWatch turnWatch) {
+        if (game != null) {
+
+            try {
+                game.readEnemyFire(in);
+                myFleet.printStatus();
+                game.printMyBoard(true, false);
+
+                // Cronometro da jogada
+                if (turnWatch.isStarted()) {
+                    turnWatch.stop();
+
+                    System.out.println(
+                            "Tempo gasto nesta jogada: "
+                            + turnWatch.getTime(TimeUnit.SECONDS)
+                            + " segundos"
+                    );
+                }
+
+                turnWatch.reset();
+
+                if (game.getRemainingShips() > 0) {
+                    turnWatch.start();
+                }
+
+                if (game.getRemainingShips() == 0) {
+
+                    game.over();
+
+                    scoreboardManager.addScore(
+                            "Jogador",
+                            game.getMyMoves().size()
+                    );
+
+                    scoreboardManager.displayScoreboard();
+
+                    System.out.println(
+                            "Jogo terminado. Pode escrever exportpdf para guardar o historico."
+                    );
+                }
+
+            } catch (IllegalArgumentException e) {
+                System.out.println(
+                        "Erro: " + e.getMessage()
+                );
+            }
+
+        } else {
+            System.out.println(
+                    "Primeiro tem de criar uma frota."
+            );
+        }
+        return;
     }
 
     /**
