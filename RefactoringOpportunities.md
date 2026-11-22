@@ -13,3 +13,10 @@
 | Scoreboard::displayScoreboard() | Duplicated Code | Extract Method | 111591 |
 | ScoreEntry::toString() | Magic Strings | Extract Variable | 111591 |
 | Tasks::buildFleet() | Deep Nesting | Guard Clauses (Replace Nested Conditional with Guard Clauses) | 111591 |
+| Tasks::menuHelp() | Magic Strings | Introduce Constant | 129789 |
+| Tasks::readShip() | Message Chains (Law of Demeter) | Introduce Variable | 129789 |
+| Tasks::readPosition() | Unnecessary Local Variable | Inline Variable | 129789 |
+| Game::printBoard() | Long Method | Extract Method | 129789 |
+| Game::jsonShots() | Magic Strings | Introduce Field | 129789 |
+| Game::fireSingleShot() | Primitive Obsession / Long Parameter List | Introduce Parameter Object | 129789 |
+| Game::getRemainingShips() | Redundant Local Variable | Inline Method | 129789 |
