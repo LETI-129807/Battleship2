@@ -385,12 +385,6 @@ public class Tasks {
         return new Position(row, column);
     }
 
-    /**
-     * Le uma posicao no formato A3 ou A 3.
-     *
-     * @param in Scanner de entrada
-     * @return Posicao lida
-     */
     public static IPosition readClassicPosition(@NotNull Scanner in) {
 
         if (!in.hasNext()) {
@@ -413,28 +407,29 @@ public class Tasks {
         input = input.toUpperCase();
 
         if (input.matches("[A-Z]\\d+")) {
-
-            char column = input.charAt(0);
-            int row = Integer.parseInt(input.substring(1));
-
-            return new Position(column, row);
-
+            return parseCompactPosition(input);
         } else if (
                 part2 != null
                         && part1.toUpperCase().matches("[A-Z]")
                         && part2.matches("\\d+")
         ) {
-
-            char column = part1.toUpperCase().charAt(0);
-            int row = Integer.parseInt(part2);
-
-            return new Position(column, row);
-
+            return parseSpacedPosition(part1, part2);
         } else {
-
             throw new IllegalArgumentException(
                     "Formato inválido. Use 'A3', 'A 3' ou similar."
             );
         }
+    }
+
+    private static IPosition parseCompactPosition(String input) {
+        char column = input.charAt(0);
+        int row = Integer.parseInt(input.substring(1));
+        return new Position(column, row);
+    }
+
+    private static IPosition parseSpacedPosition(String part1, String part2) {
+        char column = part1.toUpperCase().charAt(0);
+        int row = Integer.parseInt(part2);
+        return new Position(column, row);
     }
 }
