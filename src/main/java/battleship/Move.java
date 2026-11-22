@@ -100,7 +100,7 @@ public class Move implements IMove {
 		int outsideShots = Game.NUMBER_SHOTS - validShots - repeatedShots;
 
 		if (verbose) {
-			printVerboseSummary(validShots, repeatedShots, missedShots, sunkBoatsCount, hitsPerBoat, outsideShots);
+			printVerboseSummary(validShots, repeatedShots, missedShots, sunkBoatsCount, hitsPerBoat);
 		}
 
 		// Criar o mapa para o JSON
@@ -153,8 +153,8 @@ public class Move implements IMove {
 	}
 
 	private void printVerboseSummary(int validShots, int repeatedShots, int missedShots,
-									 Map<String, Integer> sunkBoatsCount, Map<String, Integer> hitsPerBoat,
-									 int outsideShots) {
+									 Map<String, Integer> sunkBoatsCount, Map<String, Integer> hitsPerBoat) {
+		int outsideShots = Game.NUMBER_SHOTS - validShots - repeatedShots;
 		// Construção da mensagem de saída
 		StringBuilder output = new StringBuilder();
 
