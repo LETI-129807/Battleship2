@@ -25,6 +25,7 @@ public class ScoreEntry {
 
     @Override
     public String toString() {
-        return String.format("Jogador: %-15s | Tiros Efetuados: %-3d | Data: %s", playerName, totalShots, date);
+        String formattedEntry = String.format("Jogador: %-15s | Tiros Efetuados: %-3d | Data: %s", playerName, totalShots, date);
+        return formattedEntry;
     }
 }
