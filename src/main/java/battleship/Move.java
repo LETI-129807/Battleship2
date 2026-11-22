@@ -84,10 +84,11 @@ public class Move implements IMove {
 			else {
 				// Tiro válido
 				validShots++;
-				if (result.ship() == null)
+				IShip ship = result.ship();
+				if (ship == null)
 					missedShots++; // Tiro na água
 				else{
-					String boatName = result.ship().getCategory();
+					String boatName = ship.getCategory();
 					hitsPerBoat.put(boatName, hitsPerBoat.getOrDefault(boatName, 0) + 1);
 					if (result.sunk())
 						sunkBoatsCount.put(boatName, sunkBoatsCount.getOrDefault(boatName, 0) + 1); // Contar barcos do mesmo tipo afundados
