@@ -40,6 +40,7 @@ public class Tasks {
             DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS");
 
     private static final Scoreboard scoreboardManager = new Scoreboard();
+    public static final String MENU_SEPARATOR = "===============================================================";
 
     /**
      * Menu principal do jogo.
@@ -288,7 +289,7 @@ public class Tasks {
         System.out.println("- " + EXPORTPDF + ": Exporta o historico de jogadas para PDF.");
         System.out.println("- " + DESISTIR + ": Encerra o jogo.");
 
-        System.out.println("===============================================================");
+        System.out.println(MENU_SEPARATOR);
     }
 
     /**
