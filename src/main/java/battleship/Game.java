@@ -9,6 +9,9 @@ import java.util.*;
 
 public class Game implements IGame
 {
+
+	private static ObjectMapper OBJECT_MAPPER;
+
 	/**
 	 * Prints the game board by representing the positions of ships, adjacent tiles,
 	 * shots, and other game elements onto the console. The method also optionally
@@ -123,7 +126,8 @@ public class Game implements IGame
 		assert shots != null;
 
 		// Serializar os tiros gerados em JSON usando a biblioteca Jackson
-		ObjectMapper objectMapper = new ObjectMapper();
+		OBJECT_MAPPER = new ObjectMapper();
+		ObjectMapper objectMapper = OBJECT_MAPPER;
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
 		// 1. Create a simplified list containing only the desired data
