@@ -323,24 +323,27 @@ public class Tasks {
 
             IShip s = readShip(in);
 
-            if (s != null) {
-
-                boolean success = fleet.addShip(s);
-
-                if (success) {
-                    i++;
-                } else {
-                    LOGGER.info(
-                            "Falha na criacao de {} {} {}",
-                            s.getCategory(),
-                            s.getBearing(),
-                            s.getPosition()
-                    );
-                }
-
-            } else {
+            // Guard Clause: Se o navio for nulo, avisa e salta para a próxima iteração
+            if (s == null) {
                 LOGGER.info("Navio desconhecido!");
+                continue;
             }
+
+            boolean success = fleet.addShip(s);
+
+            // Guard Clause: Se falhar a adição, avisa e salta para a próxima iteração
+            if (!success) {
+                LOGGER.info(
+                        "Falha na criacao de {} {} {}",
+                        s.getCategory(),
+                        s.getBearing(),
+                        s.getPosition()
+                );
+                continue;
+            }
+
+            // Se chegou aqui, o navio foi adicionado com sucesso
+            i++;
         }
 
         LOGGER.info("{} navios adicionados com sucesso!", i);
