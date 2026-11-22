@@ -366,10 +366,7 @@ public class Tasks {
 
         assert in != null;
 
-        int row = in.nextInt();
-        int column = in.nextInt();
-
-        return new Position(row, column);
+        return new Position(in.nextInt(), in.nextInt());
     }
 
     /**
