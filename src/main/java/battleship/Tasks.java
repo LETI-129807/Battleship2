@@ -348,7 +348,8 @@ public class Tasks {
 
         Position pos = readPosition(in);
 
-        char c = in.next().charAt(0);
+        String bearingInput = in.next();
+        char c = bearingInput.charAt(0);
 
         Compass bearing = Compass.charToCompass(c);
 
