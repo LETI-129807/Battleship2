@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,6 +12,7 @@ import java.util.List;
 
 public class Scoreboard {
     private static final String FILE_PATH = "data/scoreboard.json";
+    public static final String DATA = "data";
     private final Gson gson;
     private List<ScoreEntry> scores;
 
@@ -37,17 +37,17 @@ public class Scoreboard {
     }
 
     public void addScore(String playerName, int totalShots) {
-        File dir = new File("data");
+        File dir = new File(DATA);
         if (!dir.exists()) {
             dir.mkdirs();
         }
 
         scores.add(new ScoreEntry(playerName, totalShots, LocalDate.now().toString()));
-        saveScores();
+        saveScores(FILE_PATH);
     }
 
-    private void saveScores() {
-        try (Writer writer = new FileWriter(FILE_PATH)) {
+    private void saveScores(String filePath) {
+        try (Writer writer = new FileWriter(filePath)) {
             gson.toJson(scores, writer);
         } catch (IOException e) {
             System.err.println("Erro ao guardar o Scoreboard: " + e.getMessage());

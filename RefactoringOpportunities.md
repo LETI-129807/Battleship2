@@ -13,6 +13,12 @@
 | Scoreboard::displayScoreboard() | Duplicated Code | Extract Method | 111591 |
 | ScoreEntry::toString() | Magic Strings | Extract Variable | 111591 |
 | Tasks::buildFleet() | Deep Nesting | Guard Clauses (Replace Nested Conditional with Guard Clauses) | 111591 |
+
+| Move::processEnemyFire() | Long Method | Extract Method | 122637 |
+| Scoreboard::addScore() | Magic Strings | Introduce Constant | 122637 |
+| Move::processEnemyFire() | Duplicated Code | Introduce Variable | 122637 |
+| ScoreEntry::playerName | Data Class | Encapsulate Field | 122637 |
+| Scoreboard::saveScores() | Magic Strings | Introduce Parameter | 122637 |
 | Tasks::menuHelp() | Magic Strings | Introduce Constant | 129789 |
 | Tasks::readShip() | Message Chains (Law of Demeter) | Introduce Variable | 129789 |
 | Tasks::readPosition() | Unnecessary Local Variable | Inline Variable | 129789 |
