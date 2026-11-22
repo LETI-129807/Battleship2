@@ -8,4 +8,8 @@
 | Ship.isInsideBoard() | Complex Conditional | Introduce Variable | 129807 |
 | Scoreboard.loadScores() | Unnecessary Local Variable | Inline Variable | 129807 |
 | PdfExporter.writeLine() | Magic Numbers | Introduce Parameter | 129807 |
-
+| Tasks::menu() | Long Method / Switch Statements | Extract Method | 111591 |
+| Tasks::readClassicPosition() | Complex Conditional | Decompose Conditional | 111591 |
+| Scoreboard::displayScoreboard() | Duplicated Code | Extract Method | 111591 |
+| ScoreEntry::toString() | Magic Strings | Extract Variable | 111591 |
+| Tasks::buildFleet() | Deep Nesting | Guard Clauses (Replace Nested Conditional with Guard Clauses) | 111591 |
